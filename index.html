@@ -275,7 +275,7 @@
   <div><b>Lima Softwares</b><span data-t="foot_tag"></span><br>Lima, Perú</div>
   <div><b data-t="foot_prod"></b><a href="#funciones" data-t="nav_feat"></a><a href="#bot" data-t="nav_bot"></a><a href="#planes" data-t="nav_plans"></a><a href="#descargar" data-t="nav_dl"></a></div>
   <div><b data-t="foot_help"></b><a data-wa>WhatsApp +51 974 548 596</a><a href="mailto:shamer.licond@gmail.com">shamer.licond@gmail.com</a><a href="#preguntas" data-t="nav_faq"></a></div>
-  <div><b>Legal</b><a href="https://docs.google.com/document/d/1R28mHDP6z3ZMh7JA6WabtJE4VxYhtuotEMMI3qzFqNQ/edit?usp=sharing" data-t="foot_terms"></a><a href="https://docs.google.com/document/d/1cqzPTIY6vzeTQfIubwokBng5IB9Xqq4Bu00IEQY2YVs/edit?usp=sharing" data-t="foot_priv"></a></div>
+  <div><b>Legal</b><a href="terminos.html" data-t="foot_terms"></a><a href="privacidad.html" data-t="foot_priv"></a><a href="privacidad.html#eliminar" data-t="foot_del"></a></div>
 </div><div class="copy">© <span id="y">2026</span> Lima Softwares</div></footer>
 
 <script>
@@ -287,7 +287,7 @@ const T = {
   kicker: ["Sistema de ventas para bodegas, minimarkets y tiendas", "Sistema de vendas para mercadinhos e lojas", "Point of sale for corner stores and small shops"],
   h1: ["Tu tienda sigue vendiendo <em>aunque se caiga el internet</em>", "Sua loja continua vendendo <em>mesmo sem internet</em>", "Your store keeps selling <em>even when the internet is down</em>"],
   lead: ["Ventas con lector, stock al día, cuaderno de fiados, caja y un bot de WhatsApp que atiende a tus clientes. Todo en tu computadora, con soporte personalizado.", "Vendas com leitor, estoque em dia, caderneta de fiado, caixa e um robô de WhatsApp que atende seus clientes. Tudo no seu computador, com suporte personalizado.", "Barcode sales, up-to-date stock, store credit book, cash register and a WhatsApp bot that serves your customers. All on your computer, with personal support."],
-  fine: ["Sin tarjeta de crédito · Planes desde <b>S/ 119 al mes</b> en Perú y <b>R$ 149</b> en Brasil", "Sem cartão de crédito · Planos a partir de <b>R$ 149 por mês</b> no Brasil e <b>S/ 119</b> no Peru", "No credit card · Plans from <b>S/ 119 a month</b> in Peru and <b>R$ 149</b> in Brazil"],
+  fine: ["Sin tarjeta de crédito · Planes desde <b>S/ 119 al mes</b> en Perú y <b>R$ 179</b> en Brasil (≈ US$ 35)", "Sem cartão de crédito · Planos a partir de <b>R$ 179 por mês</b> no Brasil e <b>S/ 119</b> no Peru (≈ US$ 35)", "No credit card · Plans from <b>US$ 35 a month</b> (S/ 119 in Peru, R$ 179 in Brazil)"],
   ch_sales: ["Ventas", "Vendas", "Sales"], ch_stock: ["Stock", "Estoque", "Stock"], ch_credit: ["Fiados", "Fiado", "Store credit"], ch_cash: ["Caja", "Caixa", "Cash register"], ch_bot: ["Bot de WhatsApp", "Robô de WhatsApp", "WhatsApp bot"], ch_quotes: ["Cotizaciones", "Orçamentos", "Quotes"], ch_warranty: ["Garantías", "Garantias", "Warranties"], ch_lang: ["ES · PT · EN", "PT · ES · EN", "EN · ES · PT"],
   f_eyebrow: ["Funciones", "Funções", "Features"], f_title: ["Todo lo que tu tienda necesita, en un solo programa", "Tudo o que sua loja precisa, em um só programa", "Everything your store needs, in one program"],
   f_sub: ["Simple para el cajero, completo para el dueño. Sin mensualidades escondidas ni equipos especiales: tu computadora y un lector de códigos bastan.", "Simples para o caixa, completo para o dono. Sem taxas escondidas nem equipamento especial: seu computador e um leitor de código bastam.", "Simple for the cashier, complete for the owner. No hidden fees or special hardware: your computer and a barcode scanner are enough."],
@@ -392,12 +392,12 @@ const T = {
   ct_t: ["¿Tienes dudas? Conversemos", "Tem dúvidas? Vamos conversar", "Questions? Let's talk"],
   ct_p: ["Te ayudamos a instalarlo, cargar tus productos y conectar tu WhatsApp. Atención de lunes a sábado.", "Ajudamos a instalar, cadastrar seus produtos e conectar seu WhatsApp. Atendimento de segunda a sábado.", "We help you install it, load your products and connect your WhatsApp. Monday to Saturday."],
   foot_tag: ["Desarrollo de software · Asistencia técnica personalizada", "Desenvolvimento de software · Suporte técnico personalizado", "Software development · Personal tech support"],
-  foot_prod: ["Producto", "Produto", "Product"], foot_help: ["Ayuda", "Ajuda", "Help"], foot_terms: ["Términos y condiciones", "Termos e condições", "Terms and conditions"], foot_priv: ["Política de privacidad", "Política de privacidade", "Privacy policy"],
+  foot_prod: ["Producto", "Produto", "Product"], foot_help: ["Ayuda", "Ajuda", "Help"], foot_terms: ["Términos y condiciones", "Termos e condições", "Terms and conditions"], foot_priv: ["Política de privacidad", "Política de privacidade", "Privacy policy"], foot_del: ["Eliminar mis datos", "Apagar meus dados", "Delete my data"],
   wa_msg: ["Hola, quiero información de Lima Gestor", "Olá, quero informações do Lima Gestor", "Hi, I'd like info about Lima Gestor"],
 };
 const PRICES = {  // igual que en Lima Gestor (licencia.py)
-  PE: { cur: "S/ ", m: 119, s: 609, a: 1069, bot: [89, 459, 799] },
-  BR: { cur: "R$ ", m: 149, s: 759, a: 1349, bot: [129, 659, 1159] },
+  PE: { cur: "S/ ", m: 119, s: 619, a: 1079, bot: [99, 529, 929] },
+  BR: { cur: "R$ ", m: 179, s: 899, a: 1579, bot: [149, 779, 1349] },
 };
 const LI = { es: 0, pt: 1, en: 2 };
 let L = "es", C = "PE", VER = null, userC = false;
