@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Conectar WhatsApp · Lima Gestor</title>
+<link rel="icon" href="icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --navy:#0F2240; --blue:#1877E8; --ink:#1B2433; --muted:#5B6678; --line:#E3E8EF; --sky:#F5F9FF; --green:#1FA35B; --red:#B23A2A; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Plus Jakarta Sans",system-ui,sans-serif; color:var(--ink); background:var(--sky); line-height:1.6; padding:0 16px; }
+  .box { max-width:520px; margin:40px auto; background:#fff; border:1px solid var(--line); border-radius:18px; padding:28px; display:flex; flex-direction:column; gap:14px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; color:var(--navy); } .brand img { width:34px; height:34px; } .brand span { color:var(--blue); }
+  h1 { font-size:24px; line-height:1.2; margin:4px 0 0; color:var(--navy); }
+  p { margin:0; } ol { margin:0; padding-left:20px; display:grid; gap:4px; }
+  .btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:14px; border:0; border-radius:12px; background:var(--blue); color:#fff; font-weight:800; font-size:16px; font-family:inherit; cursor:pointer; }
+  .btn:disabled { opacity:.6; cursor:default; }
+  .check { display:flex; gap:10px; align-items:flex-start; font-size:14px; cursor:pointer; } .check input { width:18px; height:18px; margin-top:3px; }
+  .msg { border-radius:12px; padding:12px 14px; font-weight:600; } .ok { background:#E7F6EE; color:#145E37; } .bad { background:#F8E2DD; color:var(--red); } .wait { background:var(--sky); color:var(--navy); }
+  .small { font-size:13px; color:var(--muted); }
+  .lang { margin-left:auto; display:flex; gap:3px; } .lang button { border:1px solid var(--line); background:#fff; border-radius:8px; padding:3px 8px; font-weight:700; font-size:12px; font-family:inherit; color:var(--muted); cursor:pointer; } .lang button.on { background:var(--navy); color:#fff; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="brand"><img src="icono.png" alt="">Lima <span>Gestor</span>
+    <div class="lang"><button data-l="es">ES</button><button data-l="pt">PT</button><button data-l="en">EN</button></div></div>
+  <h1 data-t="title"></h1>
+  <p data-t="lead"></p>
+  <ol><li data-t="s1"></li><li data-t="s2"></li><li data-t="s3"></li></ol>
+  <label class="check"><input type="checkbox" id="coex"><span data-t="coex"></span></label>
+  <button class="btn" id="go" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg><span data-t="btn"></span></button>
+  <div class="msg wait" id="msg" hidden></div>
+  <p class="small" data-t="privacy"></p>
+</div>
+<script>
+const API = "https://lima-api.shamer-licond.workers.dev";
+const T = {
+  title: ["Conecta el WhatsApp de tu tienda", "Conecte o WhatsApp da sua loja", "Connect your store's WhatsApp"],
+  lead: ["Lima Gestor atenderá a tus clientes por WhatsApp con tu stock real. No necesitas crear apps ni copiar códigos.", "O Lima Gestor vai atender seus clientes pelo WhatsApp com seu estoque real. Não precisa criar apps nem copiar códigos.", "Lima Gestor will serve your customers on WhatsApp with your real stock. No apps to create, no codes to copy."],
+  s1: ["Toca el botón y entra con tu Facebook (el del dueño).", "Toque no botão e entre com o seu Facebook (do dono).", "Tap the button and log in with your (the owner's) Facebook."],
+  s2: ["Elige o crea la cuenta de tu negocio y tu cuenta de WhatsApp Business.", "Escolha ou crie a conta do seu negócio e a conta do WhatsApp Business.", "Pick or create your business account and WhatsApp Business account."],
+  s3: ["Escribe el número de la tienda y el código que te llega por SMS o llamada. Listo.", "Digite o número da loja e o código que chegar por SMS ou ligação. Pronto.", "Enter the store's number and the code you get by SMS or call. Done."],
+  coex: ["Ya uso la app WhatsApp Business en el celular con este número y quiero seguir usándola.", "Já uso o app WhatsApp Business no celular com este número e quero continuar usando.", "I already use the WhatsApp Business app on my phone with this number and want to keep using it."],
+  btn: ["Conectar con Facebook", "Conectar com o Facebook", "Continue with Facebook"],
+  privacy: ["Lima Softwares solo recibe el permiso para enviar y recibir mensajes de tu cuenta de WhatsApp Business. Tu contraseña de Facebook nunca pasa por aquí. Política de privacidad: limasoftwares.pages.dev/privacidad.html", "A Lima Softwares só recebe a permissão para enviar e receber mensagens da sua conta do WhatsApp Business. Sua senha do Facebook nunca passa por aqui. Privacidade: limasoftwares.pages.dev/privacidad.html", "Lima Softwares only receives permission to send and receive messages for your WhatsApp Business account. Your Facebook password never goes through here. Privacy: limasoftwares.pages.dev/privacidad.html"],
+  loading: ["Cargando…", "Carregando…", "Loading…"],
+  working: ["Conectando… no cierres esta ventana.", "Conectando… não feche esta janela.", "Connecting… don't close this window."],
+  done: ["¡Listo! Vuelve a Lima Gestor: en unos segundos aparece conectado. Ya puedes cerrar esta ventana.", "Pronto! Volte ao Lima Gestor: em alguns segundos aparece conectado. Já pode fechar esta janela.", "Done! Go back to Lima Gestor: it shows as connected in a few seconds. You can close this window."],
+  cancel: ["No se completó la conexión. Puedes intentarlo de nuevo.", "A conexão não foi concluída. Pode tentar de novo.", "The connection wasn't completed. You can try again."],
+  expired: ["Este enlace venció. Vuelve a Lima Gestor y toca otra vez «Conectar mi WhatsApp».", "Este link venceu. Volte ao Lima Gestor e toque de novo em «Conectar meu WhatsApp».", "This link expired. Go back to Lima Gestor and tap «Connect my WhatsApp» again."],
+  off: ["La conexión automática aún no está disponible. Escríbenos por WhatsApp: +51 974 548 596.", "A conexão automática ainda não está disponível. Fale conosco pelo WhatsApp: +51 974 548 596.", "Automatic connection isn't available yet. Message us on WhatsApp: +51 974 548 596."],
+  nolink: ["Abre esta página desde Lima Gestor: Configuración → WhatsApp Business → Conectar mi WhatsApp.", "Abra esta página pelo Lima Gestor: Configurações → WhatsApp Business → Conectar meu WhatsApp.", "Open this page from Lima Gestor: Settings → WhatsApp Business → Connect my WhatsApp."],
+  error: ["No se pudo terminar: ", "Não foi possível concluir: ", "Couldn't finish: "],
+};
+const q = new URLSearchParams(location.search);
+const SID = (q.get("s") || "").replace(/[^0-9a-f]/g, "");
+let L = ["es", "pt", "en"].includes(q.get("l")) ? q.get("l") : ((navigator.language || "es").slice(0, 2) === "pt" ? "pt" : (navigator.language || "").startsWith("en") ? "en" : "es");
+const I = { es: 0, pt: 1, en: 2 };
+const tx = (k) => T[k][I[L]];
+function paint() {
+  document.documentElement.lang = L;
+  document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = tx(e.dataset.t); });
+  document.querySelectorAll("[data-l]").forEach((b) => b.classList.toggle("on", b.dataset.l === L));
+}
+document.querySelectorAll("[data-l]").forEach((b) => b.onclick = () => { L = b.dataset.l; paint(); });
+const msg = (k, cls, extra = "") => { const m = document.getElementById("msg"); m.hidden = false; m.className = "msg " + cls; m.textContent = tx(k) + extra; };
+const go = document.getElementById("go");
+paint();
+
+let session = { waba_id: "", phone_number_id: "" }, finished = false;
+window.addEventListener("message", (e) => {  // datos que manda la ventana de Facebook
+  if (!/(^|\.)facebook\.com$/.test(new URL(e.origin).hostname)) return;
+  try {
+    const d = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
+    if (d && d.type === "WA_EMBEDDED_SIGNUP") {
+      if (String(d.event || "").startsWith("FINISH")) session = { waba_id: d.data?.waba_id || "", phone_number_id: d.data?.phone_number_id || "" };
+      else if (d.event === "CANCEL") { session.cancel = d.data?.current_step || "cancel"; }
+    }
+  } catch { /* otros mensajes */ }
+});
+
+async function finish(code) {
+  msg("working", "wait");
+  for (let i = 0; i < 20 && !session.waba_id; i++) await new Promise((r) => setTimeout(r, 300));  // el aviso puede llegar un poco después
+  try {
+    const r = await fetch(API + "/v1/es/finish", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id: SID, code, waba_id: session.waba_id, phone_number_id: session.phone_number_id, coex: document.getElementById("coex").checked }) });
+    const d = await r.json();
+    if (d.ok) { finished = true; go.hidden = true; return msg("done", "ok"); }
+    if (d.error === "es_expired") return msg("expired", "bad");
+    msg("error", "bad", d.msg || d.error || "");
+  } catch (e) { msg("error", "bad", String(e)); }
+  go.disabled = false;
+}
+
+async function start() {
+  if (!SID) { msg("nolink", "bad"); return; }
+  msg("loading", "wait");
+  let cfg;
+  try { cfg = await (await fetch(API + "/v1/es/config")).json(); } catch { cfg = { ok: false }; }
+  if (!cfg.ok) { msg("off", "bad"); return; }
+  window.fbAsyncInit = () => {
+    FB.init({ appId: cfg.app_id, autoLogAppEvents: true, xfbml: false, version: "v23.0" });
+    document.getElementById("msg").hidden = true;
+    go.disabled = false;
+  };
+  const s = document.createElement("script");
+  s.src = "https://connect.facebook.net/en_US/sdk.js"; s.async = true; s.defer = true; s.crossOrigin = "anonymous";
+  document.head.append(s);
+  go.onclick = () => {
+    go.disabled = true;
+    const coex = document.getElementById("coex").checked;
+    FB.login((resp) => {
+      if (resp.authResponse && resp.authResponse.code) return finish(resp.authResponse.code);
+      fetch(API + "/v1/es/cancel", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: SID, why: session.cancel || "closed" }) }).catch(() => {});
+      msg("cancel", "bad"); go.disabled = false;
+    }, {
+      config_id: cfg.config_id, response_type: "code", override_default_response_type: true,
+      extras: { setup: {}, featureType: coex ? "whatsapp_business_app_onboarding" : "", sessionInfoVersion: "3" },
+    });
+  };
+}
+start();
+</script>
+</body>
+</html>
