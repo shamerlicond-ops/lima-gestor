@@ -1,0 +1,5 @@
+Tipografías incluidas (SIL Open Font License 1.1, uso libre):
+- Bricolage Grotesque (Ateliê Triângulo / Mathieu Triay)
+- Manrope (Mikhail Sharanda)
+- Kalam (Indian Type Foundry)
+Texto de la licencia: https://openfontlicense.org
