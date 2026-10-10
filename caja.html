@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1F4D35">
+<title>Caja · Lima Gestor</title>
+<link rel="icon" href="icono.png">
+<link rel="apple-touch-icon" href="icono.png">
+<style>
+  :root { --green:#1F4D35; --ink:#18291F; --muted:#66766C; --line:#DAE2D7; --bg:#EEF2EC; --red:#B23A2A; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:grid; place-items:center; padding:16px; }
+  .box { background:#fff; border:1px solid var(--line); border-radius:18px; padding:24px; max-width:420px; width:100%; text-align:center; display:grid; gap:12px; }
+  h1 { margin:0; font-size:20px; } p { margin:0; color:var(--muted); line-height:1.5; }
+  input { width:100%; padding:13px; border:1px solid var(--line); border-radius:12px; font:700 20px ui-monospace,Consolas,monospace; text-align:center; letter-spacing:.1em; text-transform:uppercase; }
+  .btn { display:block; width:100%; padding:13px; border:0; border-radius:12px; background:var(--green); color:#fff; font-weight:700; font-size:16px; cursor:pointer; font-family:inherit; }
+  .link { background:none; border:0; color:var(--muted); text-decoration:underline; font:inherit; font-size:13px; cursor:pointer; }
+  .err { color:var(--red); min-height:18px; font-size:14px; }
+  .small { font-size:13px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <img src="icono.png" alt="" width="56" height="56" style="margin:0 auto">
+  <h1 id="t"></h1>
+  <p id="p"></p>
+  <form id="f" hidden><input id="c" maxlength="9" placeholder="ABCD-EFGH" autocomplete="off"><div class="err" id="e"></div><button class="btn" id="go"></button></form>
+  <button class="btn" id="b" hidden></button>
+  <button class="link" id="x" hidden></button>
+  <p class="small" id="s"></p>
+</div>
+<script>
+// Celular o tablet como CAJA desde otra red: esta página (dirección fija) guarda el código de la tienda y una llave
+// propia del celular, y abre la computadora principal aunque su dirección de internet cambie al reiniciarse.
+const API = "https://lima-api.shamer-licond.workers.dev";
+const L = (navigator.language || "es").slice(0, 2);
+const T = {
+  t: ["Usar este celular como caja", "Usar este celular como caixa", "Use this phone as a register"],
+  p: ["Escribe el código de la tienda. Está en la computadora principal: Configuración → Computadoras → Acceso desde otra red.", "Digite o código da loja. Fica no computador principal: Configurações → Computadores → Acesso de outra rede.", "Enter the store code. It's on the main computer: Settings → Computers → Access from another network."],
+  go: ["Conectar", "Conectar", "Connect"], bad: ["El código tiene 8 letras/números, ej. ABCD-EFGH.", "O código tem 8 letras/números, ex.: ABCD-EFGH.", "The code has 8 letters/numbers, e.g. ABCD-EFGH."],
+  unknown: ["Ese código no existe. Revísalo en la computadora principal.", "Esse código não existe. Confira no computador principal.", "That code doesn't exist. Check it on the main computer."],
+  open: ["Abriendo la caja…", "Abrindo o caixa…", "Opening the register…"], wait: ["Conectando con la computadora de la tienda.", "Conectando ao computador da loja.", "Connecting to the store's computer."],
+  off: ["La computadora de la tienda no está conectada", "O computador da loja não está conectado", "The store's computer isn't online"],
+  offp: ["Debe estar prendida, con Lima Gestor abierto y con internet.", "Ele precisa estar ligado, com o Lima Gestor aberto e com internet.", "It must be on, with Lima Gestor open and online."],
+  retry: ["Reintentar", "Tentar de novo", "Try again"], other: ["Usar otro código", "Usar outro código", "Use another code"],
+  tip: ["La primera vez el dueño debe aprobar este celular en la computadora principal. Luego agrega esta página a tu pantalla de inicio.", "Na primeira vez o dono precisa aprovar este celular no computador principal. Depois adicione esta página à tela inicial.", "The first time, the owner must approve this phone on the main computer. Then add this page to your home screen."],
+};
+const tx = (k) => T[k][L === "pt" ? 1 : L === "en" ? 2 : 0];
+const $ = (id) => document.getElementById(id);
+const ABC = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const norm = (v) => { const r = String(v || "").toUpperCase().split("").filter((ch) => ABC.includes(ch)).join(""); return r.length === 8 ? r.slice(0, 4) + "-" + r.slice(4) : ""; };
+const newKey = () => { const b = new Uint8Array(32); crypto.getRandomValues(b); return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); };
+let acc = null;
+try { acc = JSON.parse(localStorage.getItem("lg_caja") || "null"); } catch { acc = null; }
+const fromHash = norm(location.hash.slice(1));
+if (fromHash && (!acc || acc.c !== fromHash)) acc = { c: fromHash, k: (acc && acc.k) || newKey() };
+const save = () => { try { localStorage.setItem("lg_caja", JSON.stringify(acc)); } catch { /* sin almacenamiento */ } };
+$("s").textContent = tx("tip"); $("go").textContent = tx("go"); $("x").textContent = tx("other");
+
+function ask(err) {
+  $("t").textContent = tx("t"); $("p").textContent = tx("p");
+  $("f").hidden = false; $("b").hidden = true; $("x").hidden = true; $("e").textContent = err ? tx(err) : "";
+  if (acc) $("c").value = acc.c;
+}
+async function go() {
+  if (!acc) return ask();
+  $("f").hidden = true; $("x").hidden = false;
+  $("t").textContent = tx("open"); $("p").textContent = tx("wait"); $("b").hidden = true;
+  try {
+    const r = await fetch(`${API}/v1/rt/${acc.c}`);
+    const d = await r.json();
+    if (d.url) { save(); location.replace(`${d.url}/?dev=${encodeURIComponent(acc.k)}`); return; }
+    if (r.status === 404) return ask("unknown");
+  } catch { /* sin respuesta */ }
+  $("t").textContent = tx("off"); $("p").textContent = tx("offp"); $("b").textContent = tx("retry"); $("b").hidden = false;
+}
+$("f").onsubmit = (e) => { e.preventDefault(); const c = norm($("c").value); if (!c) return ask("bad"); acc = { c, k: (acc && acc.k) || newKey() }; save(); go(); };
+$("b").onclick = go;
+$("x").onclick = () => ask();
+go();
+</script>
+</body>
+</html>
