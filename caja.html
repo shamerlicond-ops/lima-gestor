@@ -11,11 +11,13 @@
 <style>
   :root { --green:#1F4D35; --ink:#18291F; --muted:#66766C; --line:#DAE2D7; --bg:#EEF2EC; --red:#B23A2A; }
   * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:grid; place-items:center; padding:16px; }
   .box { background:#fff; border:1px solid var(--line); border-radius:18px; padding:24px; max-width:420px; width:100%; text-align:center; display:grid; gap:12px; }
   h1 { margin:0; font-size:20px; } p { margin:0; color:var(--muted); line-height:1.5; }
   input { width:100%; padding:13px; border:1px solid var(--line); border-radius:12px; font:700 20px ui-monospace,Consolas,monospace; text-align:center; letter-spacing:.1em; text-transform:uppercase; }
   .btn { display:block; width:100%; padding:13px; border:0; border-radius:12px; background:var(--green); color:#fff; font-weight:700; font-size:16px; cursor:pointer; font-family:inherit; }
+  .btn.alt { background:#fff; color:var(--green); border:2px solid var(--green); }
   .link { background:none; border:0; color:var(--muted); text-decoration:underline; font:inherit; font-size:13px; cursor:pointer; }
   .err { color:var(--red); min-height:18px; font-size:14px; }
   .small { font-size:13px; }
@@ -28,6 +30,7 @@
   <p id="p"></p>
   <form id="f" hidden><input id="c" maxlength="9" placeholder="ABCD-EFGH" autocomplete="off"><div class="err" id="e"></div><button class="btn" id="go"></button></form>
   <button class="btn" id="b" hidden></button>
+  <button class="btn alt" id="w" hidden></button>
   <button class="link" id="x" hidden></button>
   <p class="small" id="s"></p>
 </div>
@@ -40,7 +43,9 @@ const T = {
   t: ["Conectar este equipo a la tienda", "Conectar este aparelho à loja", "Connect this device to the store"],
   p: ["Escribe el código de la tienda. Está en la computadora principal: Configuración → Computadoras.", "Digite o código da loja. Fica no computador principal: Configurações → Computadores.", "Enter the store code. It's on the main computer: Settings → Computers."],
   go: ["Conectar", "Conectar", "Connect"], bad: ["El código tiene 8 letras/números, ej. ABCD-EFGH.", "O código tem 8 letras/números, ex.: ABCD-EFGH.", "The code has 8 letters/numbers, e.g. ABCD-EFGH."],
-  unknown: ["Ese código no existe. Revísalo en la computadora principal.", "Esse código não existe. Confira no computador principal.", "That code doesn't exist. Check it on the main computer."],
+  unknown: ["No encontramos la tienda con ese código. Revisa el código y que la computadora principal esté prendida, con Lima Gestor abierto y con internet.", "Não encontramos a loja com esse código. Confira o código e se o computador principal está ligado, com o Lima Gestor aberto e com internet.", "We couldn't find a store with that code. Check the code, and that the main computer is on, with Lima Gestor open and online."],
+  wifi: ["Estoy en el WiFi de la tienda: entrar directo", "Estou no WiFi da loja: entrar direto", "I'm on the store's WiFi: go straight in"],
+  wifit: ["Si estás conectado al WiFi de la tienda, entra directo (no necesita internet):", "Se você está no WiFi da loja, entre direto (não precisa de internet):", "If you're on the store's WiFi, go straight in (no internet needed):"],
   open: ["Abriendo la caja…", "Abrindo o caixa…", "Opening the register…"], wait: ["Conectando con la computadora de la tienda.", "Conectando ao computador da loja.", "Connecting to the store's computer."],
   slow: ["Buscando la tienda… La primera vez (o si la computadora recién se prendió) puede tardar 1 a 2 minutos. No cierres esta página. ({s} s)", "Procurando a loja… Na primeira vez (ou se o computador acabou de ligar) pode levar de 1 a 2 minutos. Não feche esta página. ({s} s)", "Looking for the store… The first time (or right after the computer starts) it can take 1–2 minutes. Keep this page open. ({s} s)"],
   off: ["La computadora de la tienda no está conectada", "O computador da loja não está conectado", "The store's computer isn't online"],
@@ -55,14 +60,22 @@ const norm = (v) => { const r = String(v || "").toUpperCase().split("").filter((
 const newKey = () => { const b = new Uint8Array(32); crypto.getRandomValues(b); return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); };
 let acc = null;
 try { acc = JSON.parse(localStorage.getItem("lg_caja") || "null"); } catch { acc = null; }
-const fromHash = norm(location.hash.slice(1));
+// el QR trae el código y, si hay, la dirección del WiFi de la tienda: #ABCD-EFGH~192.168.1.20:5180
+const [hCode, hLan] = location.hash.slice(1).split("~");
+const fromHash = norm(hCode);
+const lanHint = /^(\d{1,3}\.){3}\d{1,3}:\d{2,5}$/.test(hLan || "") ? hLan : "";
 if (fromHash && (!acc || acc.c !== fromHash)) acc = { c: fromHash, k: (acc && acc.k) || newKey() };
+if (acc && lanHint && acc.c === fromHash) acc.l = lanHint;
 const save = () => { try { localStorage.setItem("lg_caja", JSON.stringify(acc)); } catch { /* sin almacenamiento */ } };
-$("s").textContent = tx("tip"); $("go").textContent = tx("go"); $("x").textContent = tx("other");
+$("s").textContent = tx("tip"); $("go").textContent = tx("go"); $("x").textContent = tx("other"); $("w").textContent = tx("wifi");
+// mismo WiFi: se abre la principal directo por la red de la tienda (no depende de internet ni del servidor)
+$("w").onclick = () => { if (!acc || !acc.l) return; save(); location.href = `http://${acc.l}/?dev=${encodeURIComponent(acc.k)}`; };
+const showWifi = (strong) => { $("w").hidden = !(acc && acc.l); $("w").className = strong ? "btn" : "btn alt"; };
 
 function ask(err) {
   $("t").textContent = tx("t"); $("p").textContent = tx("p");
   $("f").hidden = false; $("b").hidden = true; $("x").hidden = true; $("e").textContent = err ? tx(err) : "";
+  showWifi(!!err);
   if (acc) $("c").value = acc.c;
 }
 // La dirección nueva de la principal tarda en llegar a todos los servidores de internet (hasta ~2 min):
@@ -78,6 +91,7 @@ async function go() {
   busyGo = true;
   $("f").hidden = true; $("x").hidden = false; $("b").hidden = true;
   $("t").textContent = tx("open"); $("p").textContent = tx("wait");
+  showWifi(false);
   const t0 = Date.now();
   let last = "off";
   while (Date.now() - t0 < WAIT_MS) {
@@ -95,7 +109,8 @@ async function go() {
   }
   busyGo = false;
   if (last === "unknown") return ask("unknown");
-  $("t").textContent = tx("off"); $("p").textContent = tx("offp"); $("b").textContent = tx("retry"); $("b").hidden = false;
+  $("t").textContent = tx("off"); $("p").textContent = tx("offp") + (acc && acc.l ? " " + tx("wifit") : ""); $("b").textContent = tx("retry"); $("b").hidden = false;
+  showWifi(true);
 }
 $("f").onsubmit = (e) => { e.preventDefault(); const c = norm($("c").value); if (!c) return ask("bad"); acc = { c, k: (acc && acc.k) || newKey() }; save(); go(); };
 $("b").onclick = go;
