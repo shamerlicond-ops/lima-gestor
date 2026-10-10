@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1F4D35">
+<title>Mi tienda · Lima Gestor</title>
+<link rel="icon" href="icono.png">
+<link rel="apple-touch-icon" href="icono.png">
+<style>
+  :root { --green:#1F4D35; --ink:#18291F; --muted:#66766C; --line:#DAE2D7; --bg:#EEF2EC; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:grid; place-items:center; padding:16px; }
+  .box { background:#fff; border:1px solid var(--line); border-radius:18px; padding:24px; max-width:420px; width:100%; text-align:center; display:grid; gap:12px; }
+  h1 { margin:0; font-size:20px; } p { margin:0; color:var(--muted); line-height:1.5; }
+  .btn { display:block; padding:13px; border:0; border-radius:12px; background:var(--green); color:#fff; font-weight:700; font-size:16px; text-decoration:none; cursor:pointer; font-family:inherit; }
+  .small { font-size:13px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <img src="icono.png" alt="" width="56" height="56" style="margin:0 auto">
+  <h1 id="t"></h1>
+  <p id="p"></p>
+  <button class="btn" id="b" hidden></button>
+  <p class="small" id="s"></p>
+</div>
+<script>
+// Celular del dueño: esta página (dirección fija) guarda la llave de la tienda y abre la computadora principal,
+// aunque su dirección de internet cambie cada vez que se prende.
+const API = "https://lima-api.shamer-licond.workers.dev";
+const L = (navigator.language || "es").slice(0, 2);
+const T = {
+  open: ["Abriendo tu tienda…", "Abrindo sua loja…", "Opening your store…"],
+  wait: ["Conectando con la computadora de la tienda.", "Conectando ao computador da loja.", "Connecting to the store's computer."],
+  off: ["La computadora de la tienda no está conectada", "O computador da loja não está conectado", "The store's computer isn't online"],
+  offp: ["Debe estar prendida, con Lima Gestor abierto y con internet.", "Ele precisa estar ligado, com o Lima Gestor aberto e com internet.", "It must be on, with Lima Gestor open and online."],
+  retry: ["Reintentar", "Tentar de novo", "Try again"],
+  none: ["Falta el acceso", "Falta o acesso", "Access missing"],
+  nonep: ["Escanea el QR en Lima Gestor: Configuración → Computadoras → Ver mi tienda en el celular.", "Leia o QR no Lima Gestor: Configurações → Computadores → Ver minha loja no celular.", "Scan the QR in Lima Gestor: Settings → Computers → See my store on my phone."],
+  tip: ["Consejo: agrega esta página a tu pantalla de inicio para abrirla con un toque.", "Dica: adicione esta página à tela inicial para abrir com um toque.", "Tip: add this page to your home screen to open it with one tap."],
+};
+const tx = (k) => T[k][L === "pt" ? 1 : L === "en" ? 2 : 0];
+const $ = (id) => document.getElementById(id);
+const show = (t, p, btn) => { $("t").textContent = tx(t); $("p").textContent = tx(p); $("b").hidden = !btn; if (btn) $("b").textContent = tx(btn); };
+
+let acc = null;
+const h = location.hash.slice(1);
+if (/^[A-Z0-9]{4}-[A-Z0-9]{4}\.[A-Za-z0-9_-]{32,64}$/.test(h)) {
+  const [c, k] = h.split(".");
+  acc = { c, k };
+  try { localStorage.setItem("lg_m", JSON.stringify(acc)); } catch { /* sin almacenamiento: igual funciona con el enlace */ }
+  history.replaceState(null, "", location.pathname + "#" + h);  // queda en el enlace por si se agrega a la pantalla de inicio
+} else {
+  try { acc = JSON.parse(localStorage.getItem("lg_m") || "null"); } catch { acc = null; }
+}
+$("s").textContent = tx("tip");
+
+async function go() {
+  if (!acc) { show("none", "nonep"); return; }
+  show("open", "wait");
+  try {
+    const r = await fetch(`${API}/v1/rt/${acc.c}`);
+    const d = await r.json();
+    if (d.url) { location.replace(`${d.url}/m?dev=${encodeURIComponent(acc.k)}`); return; }
+  } catch { /* sin respuesta */ }
+  show("off", "offp", "retry");
+}
+$("b").onclick = go;
+go();
+</script>
+</body>
+</html>
