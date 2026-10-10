@@ -42,6 +42,7 @@ const T = {
   go: ["Conectar", "Conectar", "Connect"], bad: ["El código tiene 8 letras/números, ej. ABCD-EFGH.", "O código tem 8 letras/números, ex.: ABCD-EFGH.", "The code has 8 letters/numbers, e.g. ABCD-EFGH."],
   unknown: ["Ese código no existe. Revísalo en la computadora principal.", "Esse código não existe. Confira no computador principal.", "That code doesn't exist. Check it on the main computer."],
   open: ["Abriendo la caja…", "Abrindo o caixa…", "Opening the register…"], wait: ["Conectando con la computadora de la tienda.", "Conectando ao computador da loja.", "Connecting to the store's computer."],
+  slow: ["Buscando la tienda… La primera vez (o si la computadora recién se prendió) puede tardar 1 a 2 minutos. No cierres esta página. ({s} s)", "Procurando a loja… Na primeira vez (ou se o computador acabou de ligar) pode levar de 1 a 2 minutos. Não feche esta página. ({s} s)", "Looking for the store… The first time (or right after the computer starts) it can take 1–2 minutes. Keep this page open. ({s} s)"],
   off: ["La computadora de la tienda no está conectada", "O computador da loja não está conectado", "The store's computer isn't online"],
   offp: ["Debe estar prendida, con Lima Gestor abierto y con internet.", "Ele precisa estar ligado, com o Lima Gestor aberto e com internet.", "It must be on, with Lima Gestor open and online."],
   retry: ["Reintentar", "Tentar de novo", "Try again"], other: ["Usar otro código", "Usar outro código", "Use another code"],
@@ -64,16 +65,36 @@ function ask(err) {
   $("f").hidden = false; $("b").hidden = true; $("x").hidden = true; $("e").textContent = err ? tx(err) : "";
   if (acc) $("c").value = acc.c;
 }
+// La dirección nueva de la principal tarda en llegar a todos los servidores de internet (hasta ~2 min):
+// se reintenta solo antes de decir que el código no existe o que la computadora está apagada.
+const WAIT_MS = 150000;
+async function reachable(u) {
+  try { await fetch(`${u}/static/favicon.svg?t=${Date.now()}`, { mode: "no-cors", cache: "no-store" }); return true; } catch { return false; }
+}
+let busyGo = false;
 async function go() {
   if (!acc) return ask();
-  $("f").hidden = true; $("x").hidden = false;
-  $("t").textContent = tx("open"); $("p").textContent = tx("wait"); $("b").hidden = true;
-  try {
-    const r = await fetch(`${API}/v1/rt/${acc.c}`);
-    const d = await r.json();
-    if (d.url) { save(); location.replace(`${d.url}/?dev=${encodeURIComponent(acc.k)}`); return; }
-    if (r.status === 404) return ask("unknown");
-  } catch { /* sin respuesta */ }
+  if (busyGo) return;
+  busyGo = true;
+  $("f").hidden = true; $("x").hidden = false; $("b").hidden = true;
+  $("t").textContent = tx("open"); $("p").textContent = tx("wait");
+  const t0 = Date.now();
+  let last = "off";
+  while (Date.now() - t0 < WAIT_MS) {
+    if (!$("f").hidden) { busyGo = false; return; }  // tocó "Usar otro código"
+    try {
+      const r = await fetch(`${API}/v1/rt/${acc.c}?t=${Date.now()}`, { cache: "no-store" });
+      const d = await r.json();
+      if (d.url) {
+        last = "off";
+        if (await reachable(d.url)) { save(); location.replace(`${d.url}/?dev=${encodeURIComponent(acc.k)}`); return; }
+      } else if (r.status === 404) last = "unknown";
+    } catch { last = "off"; }
+    if (Date.now() - t0 > 6000) $("p").textContent = tx("slow").replace("{s}", Math.round((Date.now() - t0) / 1000));
+    await new Promise((ok) => setTimeout(ok, 5000));
+  }
+  busyGo = false;
+  if (last === "unknown") return ask("unknown");
   $("t").textContent = tx("off"); $("p").textContent = tx("offp"); $("b").textContent = tx("retry"); $("b").hidden = false;
 }
 $("f").onsubmit = (e) => { e.preventDefault(); const c = norm($("c").value); if (!c) return ask("bad"); acc = { c, k: (acc && acc.k) || newKey() }; save(); go(); };

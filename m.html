@@ -37,6 +37,7 @@ const T = {
   off: ["La computadora de la tienda no está conectada", "O computador da loja não está conectado", "The store's computer isn't online"],
   offp: ["Debe estar prendida, con Lima Gestor abierto y con internet.", "Ele precisa estar ligado, com o Lima Gestor aberto e com internet.", "It must be on, with Lima Gestor open and online."],
   retry: ["Reintentar", "Tentar de novo", "Try again"],
+  slow: ["Buscando tu tienda… La primera vez (o si la computadora recién se prendió) puede tardar 1 a 2 minutos. No cierres esta página.", "Procurando sua loja… Na primeira vez (ou se o computador acabou de ligar) pode levar de 1 a 2 minutos. Não feche esta página.", "Looking for your store… The first time (or right after the computer starts) it can take 1–2 minutes. Keep this page open."],
   none: ["Falta el acceso", "Falta o acesso", "Access missing"],
   nonep: ["Escanea el QR en Lima Gestor: Configuración → Computadoras → Ver mi tienda en el celular.", "Leia o QR no Lima Gestor: Configurações → Computadores → Ver minha loja no celular.", "Scan the QR in Lima Gestor: Settings → Computers → See my store on my phone."],
   tip: ["Consejo: agrega esta página a tu pantalla de inicio para abrirla con un toque.", "Dica: adicione esta página à tela inicial para abrir com um toque.", "Tip: add this page to your home screen to open it with one tap."],
@@ -57,14 +58,22 @@ if (/^[A-Z0-9]{4}-[A-Z0-9]{4}\.[A-Za-z0-9_-]{32,64}$/.test(h)) {
 }
 $("s").textContent = tx("tip");
 
+async function reachable(u) {
+  try { await fetch(`${u}/static/favicon.svg?t=${Date.now()}`, { mode: "no-cors", cache: "no-store" }); return true; } catch { return false; }
+}
 async function go() {
   if (!acc) { show("none", "nonep"); return; }
   show("open", "wait");
-  try {
-    const r = await fetch(`${API}/v1/rt/${acc.c}`);
-    const d = await r.json();
-    if (d.url) { location.replace(`${d.url}/m?dev=${encodeURIComponent(acc.k)}`); return; }
-  } catch { /* sin respuesta */ }
+  const t0 = Date.now();
+  while (Date.now() - t0 < 150000) {  // la dirección nueva tarda hasta ~2 min en llegar a todos los servidores
+    try {
+      const r = await fetch(`${API}/v1/rt/${acc.c}?t=${Date.now()}`, { cache: "no-store" });
+      const d = await r.json();
+      if (d.url && await reachable(d.url)) { location.replace(`${d.url}/m?dev=${encodeURIComponent(acc.k)}`); return; }
+    } catch { /* sin respuesta: se reintenta */ }
+    if (Date.now() - t0 > 6000) show("open", "slow");
+    await new Promise((ok) => setTimeout(ok, 5000));
+  }
   show("off", "offp", "retry");
 }
 $("b").onclick = go;

@@ -156,6 +156,7 @@
       <a class="btn s" data-wa data-t="cta_wa"></a>
     </div>
     <p class="fine" data-t="fine" data-html></p>
+    <p class="fine" id="refbox" hidden style="background:#EAF5CC;color:#1F4D35;border-radius:10px;padding:10px 12px"></p>
   </div>
   <div class="shot"><div class="bar"><i></i><i></i><i></i></div><img data-img="venta" alt="Lima Gestor"></div>
 </div>
@@ -364,15 +365,21 @@ const T = {
     [["¿Funciona sin internet?", "Sí. Ventas, stock, fiados y caja funcionan sin conexión. Internet solo se usa para el bot de WhatsApp, para buscar el nombre de un producto por su código y para activar la licencia."],
      ["Funciona sem internet?", "Sim. Vendas, estoque, fiado e caixa funcionam sem conexão. A internet só é usada para o robô de WhatsApp, para buscar o nome de um produto pelo código e para ativar a licença."],
      ["Does it work without internet?", "Yes. Sales, stock, store credit and the register work offline. Internet is only used for the WhatsApp bot, to look up a product name by barcode and to activate the license."]],
+    [["¿Gano algo si recomiendo Lima Gestor?", "Sí: 1 mes gratis por cada tienda nueva que pague su primera licencia con tu código. Tu código está en Configuración → Licencia → Recomienda y gana, con un botón para enviarlo por WhatsApp. El mes se suma solo a tu licencia."],
+     ["Ganho algo se indicar o Lima Gestor?", "Sim: 1 mês grátis para cada loja nova que pagar a primeira licença com o seu código. Seu código fica em Configurações → Licença → Indique e ganhe, com um botão para enviar pelo WhatsApp. O mês é somado sozinho à sua licença."],
+     ["Do I get anything for referring Lima Gestor?", "Yes: 1 free month for every new store that pays its first license with your code. Your code is in Settings → License → Refer and earn, with a button to send it on WhatsApp. The month is added to your license automatically."]],
     [["¿Cómo funciona la prueba gratis?", "Instalas y usas todas las funciones por 15 días, sin tarjeta. Si te sirve, eliges un plan y pagas por Yape/Plin o PIX; la licencia se activa sola. Si no, no pagas nada."],
      ["Como funciona o teste grátis?", "Você instala e usa todas as funções por 15 dias, sem cartão. Se servir, escolhe um plano e paga por PIX; a licença ativa sozinha. Se não, não paga nada."],
      ["How does the free trial work?", "Install and use every feature for 15 days, no card needed. If it works for you, pick a plan and pay by Yape/Plin or PIX; the license activates by itself. If not, you pay nothing."]],
     [["¿Mis datos están seguros?", "Tu información se guarda solo en tu computadora, con copia de seguridad automática cada día. Lima Softwares no tiene acceso a tus ventas ni a tus clientes."],
      ["Meus dados estão seguros?", "Suas informações ficam só no seu computador, com cópia de segurança automática todos os dias. A Lima Softwares não tem acesso às suas vendas nem aos seus clientes."],
      ["Is my data safe?", "Your information is stored only on your computer, with an automatic daily backup. Lima Softwares has no access to your sales or customers."]],
-    [["¿Emite boleta o factura electrónica?", "Todavía no. Lima Gestor entrega comprobantes internos en PDF (con IGV desglosado en Perú). La conexión con SUNAT está en desarrollo."],
-     ["Emite NFC-e ou nota fiscal?", "Ainda não. O Lima Gestor emite comprovantes internos em PDF. A integração com a NFC-e está em desenvolvimento."],
-     ["Does it issue electronic invoices?", "Not yet. Lima Gestor issues internal PDF receipts. Integration with Peru's SUNAT and Brazil's NFC-e is in development."]],
+    [["¿Emite boleta o factura electrónica?", "En Brasil sí: emite la NFC-e de cada venta a través de Focus NFe (la tienda contrata Focus NFe aparte, desde R$ 62,90/mes, y registra ahí su certificado digital). En Perú todavía no: Lima Gestor entrega comprobantes internos en PDF (con IGV desglosado) y la conexión con SUNAT está en desarrollo."],
+     ["Emite NFC-e ou nota fiscal?", "Sim, a NFC-e: em cada venda o Lima Gestor emite a nota pela Focus NFe (a loja contrata a Focus NFe à parte, a partir de R$ 62,90/mês, e cadastra lá o certificado digital). Sem internet, a nota fica na fila e é enviada sozinha depois. MEI não é obrigado a emitir NFC-e."],
+     ["Does it issue electronic invoices?", "In Brazil, yes: it issues each sale's NFC-e through Focus NFe (the store hires Focus NFe separately). In Peru not yet: Lima Gestor issues internal PDF receipts and the SUNAT integration is in development."]],
+    [["¿Y si no tengo lector de códigos?", "Puedes leer los códigos con la cámara de la computadora o del celular que usas como caja. Ojo: cámaras básicas, sin enfoque automático o con poca luz muchas veces no leen códigos pequeños; para vender rápido, un lector USB o Bluetooth (desde S/ 40) es mucho mejor. Lima Gestor necesita una computadora con Windows como principal: un celular solo no puede ser la principal."],
+     ["E se eu não tiver leitor de código?", "Dá para ler os códigos com a câmera do computador ou do celular que você usa como caixa. Atenção: câmeras simples, sem foco automático ou com pouca luz muitas vezes não leem códigos pequenos; para vender rápido, um leitor USB ou Bluetooth (a partir de R$ 60) é muito melhor. O Lima Gestor precisa de um computador com Windows como principal: um celular sozinho não pode ser o principal."],
+     ["What if I don't have a barcode scanner?", "You can scan barcodes with the camera of the computer or the phone you use as a register. Note: basic cameras, without autofocus or in low light often can't read small barcodes; a USB or Bluetooth scanner is much faster. Lima Gestor needs a Windows computer as the main one: a phone alone can't be the main computer."]],
     [["¿Necesito una computadora potente?", "No. Funciona en cualquier PC con Windows 10 u 11 y 4 GB de RAM. Puedes usar un lector de códigos USB y una impresora de tickets o normal."],
      ["Preciso de um computador potente?", "Não. Funciona em qualquer PC com Windows 10 ou 11 e 4 GB de RAM. Você pode usar um leitor USB e uma impressora térmica ou comum."],
      ["Do I need a powerful computer?", "No. It runs on any PC with Windows 10 or 11 and 4 GB RAM. You can use a USB barcode scanner and a receipt or regular printer."]],
@@ -399,6 +406,9 @@ const PRICES = {  // igual que en Lima Gestor (licencia.py)
   PE: { cur: "S/ ", m: 119, s: 619, a: 1079, bot: [99, 529, 929] },
   BR: { cur: "R$ ", m: 179, s: 899, a: 1579, bot: [149, 779, 1349] },
 };
+// Programa de referidos: el enlace que comparte una tienda trae ?ref=ABC-DEF
+const REF = (new URLSearchParams(location.search).get("ref") || "").toUpperCase().replace(/[^A-HJ-NP-Z2-9]/g, "").slice(0, 6);
+T.ref_box = ["🎁 Te recomendó una tienda que ya usa Lima Gestor. Cuando pagues tu licencia, escribe su código <b>{c}</b> en «Código de quien te recomendó».", "🎁 Uma loja que já usa o Lima Gestor te indicou. Quando pagar a licença, coloque o código <b>{c}</b> em «Código de quem indicou».", "🎁 A store that already uses Lima Gestor referred you. When you pay for your license, enter code <b>{c}</b> under «Referral code»."];
 const LI = { es: 0, pt: 1, en: 2 };
 let L = "es", C = "PE", VER = null, userC = false;
 const tx = (k) => (T[k] || [k, k, k])[LI[L]];
@@ -410,6 +420,8 @@ function render() {
   document.documentElement.lang = L;
   document.querySelectorAll("[data-set]").forEach((b) => b.classList.toggle("on", b.dataset.set === L));
   document.querySelectorAll("[data-t]").forEach((el) => { const v = tx(el.dataset.t); if (el.hasAttribute("data-html")) el.innerHTML = v; else el.textContent = v; });
+  const rb = document.getElementById("refbox");
+  if (rb && REF.length === 6) { rb.hidden = false; rb.innerHTML = tx("ref_box").replace("{c}", REF.slice(0, 3) + "-" + REF.slice(3)); }
   document.querySelectorAll("[data-img]").forEach((im) => { im.src = `img/${L}_${im.dataset.img}.jpg`; });
   document.querySelectorAll("[data-wa]").forEach((a) => { a.href = `https://wa.me/${WA}?text=${encodeURIComponent(tx("wa_msg"))}`; a.target = "_blank"; a.rel = "noopener"; });
   document.getElementById("seg").innerHTML = T.segs[LI[L]].map((s) => `<span>${s}</span>`).join("");
