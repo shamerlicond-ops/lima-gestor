@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#1F4D35">
-<title>Caja · Lima Gestor</title>
+<title>Conectar · Lima Gestor</title>
 <link rel="icon" href="icono.png">
 <link rel="apple-touch-icon" href="icono.png">
 <style>
@@ -37,8 +37,8 @@
 const API = "https://lima-api.shamer-licond.workers.dev";
 const L = (navigator.language || "es").slice(0, 2);
 const T = {
-  t: ["Usar este celular como caja", "Usar este celular como caixa", "Use this phone as a register"],
-  p: ["Escribe el código de la tienda. Está en la computadora principal: Configuración → Computadoras → Acceso desde otra red.", "Digite o código da loja. Fica no computador principal: Configurações → Computadores → Acesso de outra rede.", "Enter the store code. It's on the main computer: Settings → Computers → Access from another network."],
+  t: ["Conectar este equipo a la tienda", "Conectar este aparelho à loja", "Connect this device to the store"],
+  p: ["Escribe el código de la tienda. Está en la computadora principal: Configuración → Computadoras.", "Digite o código da loja. Fica no computador principal: Configurações → Computadores.", "Enter the store code. It's on the main computer: Settings → Computers."],
   go: ["Conectar", "Conectar", "Connect"], bad: ["El código tiene 8 letras/números, ej. ABCD-EFGH.", "O código tem 8 letras/números, ex.: ABCD-EFGH.", "The code has 8 letters/numbers, e.g. ABCD-EFGH."],
   unknown: ["Ese código no existe. Revísalo en la computadora principal.", "Esse código não existe. Confira no computador principal.", "That code doesn't exist. Check it on the main computer."],
   open: ["Abriendo la caja…", "Abrindo o caixa…", "Opening the register…"], wait: ["Conectando con la computadora de la tienda.", "Conectando ao computador da loja.", "Connecting to the store's computer."],
@@ -46,7 +46,7 @@ const T = {
   off: ["La computadora de la tienda no está conectada", "O computador da loja não está conectado", "The store's computer isn't online"],
   offp: ["Debe estar prendida, con Lima Gestor abierto y con internet.", "Ele precisa estar ligado, com o Lima Gestor aberto e com internet.", "It must be on, with Lima Gestor open and online."],
   retry: ["Reintentar", "Tentar de novo", "Try again"], other: ["Usar otro código", "Usar outro código", "Use another code"],
-  tip: ["La primera vez el dueño debe aprobar este celular en la computadora principal. Luego agrega esta página a tu pantalla de inicio.", "Na primeira vez o dono precisa aprovar este celular no computador principal. Depois adicione esta página à tela inicial.", "The first time, the owner must approve this phone on the main computer. Then add this page to your home screen."],
+  tip: ["Sirve en celular, tablet o computadora, en el mismo WiFi o en otro internet. La primera vez el dueño aprueba este equipo en la computadora principal. Luego guarda esta página (en el celular: Agregar a la pantalla de inicio).", "Serve em celular, tablet ou computador, no mesmo WiFi ou em outra internet. Na primeira vez o dono aprova este aparelho no computador principal. Depois salve esta página (no celular: Adicionar à tela inicial).", "Works on phone, tablet or computer, same WiFi or another network. The first time, the owner approves this device on the main computer. Then save this page (on a phone: Add to home screen)."],
 };
 const tx = (k) => T[k][L === "pt" ? 1 : L === "en" ? 2 : 0];
 const $ = (id) => document.getElementById(id);
