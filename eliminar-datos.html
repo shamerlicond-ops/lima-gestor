@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eliminar tus datos · Lima Gestor</title>
+<meta name="description" content="Cómo eliminar tus datos de Lima Gestor y de la app de Lima Softwares en Meta (WhatsApp Business).">
+<link rel="icon" href="icono.png">
+<style>
+@font-face{font-family:"Manrope";font-weight:400;font-display:swap;src:url(fonts/manrope-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:700;font-display:swap;src:url(fonts/manrope-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:800;font-display:swap;src:url(fonts/manrope-latin-800-normal.woff2) format("woff2")}
+:root{--forest:#1F4D35;--leaf:#2E6B4A;--lime:#B9DC5A;--ink:#18291F;--muted:#5E6E64;--line:#DAE2D7;--paper:#F3F6F1}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Manrope",system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6;padding:0 16px}
+.box{max-width:760px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--forest);text-decoration:none}.brand img{width:32px;height:32px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.lang{margin-left:auto;display:flex;gap:4px}
+.lang button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:3px 9px;font:700 12px "Manrope",sans-serif;color:var(--muted);cursor:pointer}
+.lang button.on{background:var(--forest);color:#fff;border-color:var(--forest)}
+.lang button:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+h1{font-size:28px;line-height:1.2;margin:8px 0 10px;color:var(--forest)}
+h2{font-size:19px;margin:26px 0 6px;color:var(--forest)}
+ol,ul{margin:6px 0;padding-left:22px;display:grid;gap:6px}
+.ok{background:#EAF5CC;border-radius:12px;padding:12px 16px;font-weight:700;margin:10px 0}
+.small{font-size:14px;color:var(--muted)}
+a{color:var(--leaf)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="box">
+  <div class="top"><a class="brand" href="./"><img src="icono.png" alt="">Lima Gestor</a>
+    <div class="lang" role="group" aria-label="Idioma"><button data-l="es">ES</button><button data-l="pt">PT</button><button data-l="en">EN</button></div></div>
+  <div id="c"></div>
+</main>
+<script>
+const EMAIL = "shamer.licond@gmail.com", WA = "+51 974 548 596";
+const C = {
+es: `<h1>Cómo eliminar tus datos</h1>
+<div class="ok" id="code" hidden>Recibimos tu solicitud de eliminación. Código de confirmación: <span></span></div>
+<p>Lima Gestor guarda los datos de cada tienda <b>en su propia computadora</b>. Lima Softwares <b>no guarda datos de tu perfil de Facebook</b> ni el contenido de los mensajes de WhatsApp.</p>
+<h2>Si conectaste WhatsApp con el botón «Conectar mi WhatsApp»</h2>
+<p>Lima Softwares solo guarda, para reenviar los mensajes a tu computadora: el ID de tu cuenta de WhatsApp Business, el ID de tu computadora y su dirección actual. El permiso de Meta pasa a tu computadora una sola vez y se borra del servidor en máximo 30 minutos.</p>
+<ol>
+<li>En Lima Gestor: <b>Configuración → WhatsApp Business → Desactivar bot</b>.</li>
+<li>En Meta: <b>business.facebook.com/settings → Integraciones → Apps conectadas</b>, elige «Lima Gestor Bot» y quítala. También puedes ir a Facebook → Configuración → <b>Integraciones comerciales</b> y eliminarla.</li>
+<li>Escríbenos a <a href="mailto:${EMAIL}">${EMAIL}</a> o por WhatsApp ${WA} con el nombre de tu tienda, pidiendo «eliminar mis datos». Borramos los datos de reenvío en un máximo de 30 días y te confirmamos.</li>
+</ol>
+<h2>Si conectaste tu propia app de Meta (configuración manual)</h2>
+<p>Los mensajes van directo de Meta a tu computadora: Lima Softwares no recibe tu token, tu clave secreta ni tus mensajes. Desactiva el bot en Lima Gestor y, si quieres, borra tu app en <b>developers.facebook.com/apps</b>.</p>
+<h2>Si eres cliente de una tienda y le escribiste a su bot</h2>
+<ul>
+<li>Para que el bot deje de escribirte, envía <b>baja</b> o <b>stop</b> en ese chat.</li>
+<li>Tus mensajes y pedidos están en la computadora de la tienda: pídele a la tienda que los borre. Si no responde, escríbenos y le haremos llegar tu pedido.</li>
+</ul>
+<h2>Tu licencia y tus pagos</h2>
+<p>Pide la eliminación a <a href="mailto:${EMAIL}">${EMAIL}</a>. La borramos, salvo lo que la ley obligue a conservar (por ejemplo, registros de pagos). Más detalles en la <a href="privacidad.html">Política de privacidad</a>.</p>
+<p class="small">Responsable: Lima Softwares (Brayan Shamer Lima Condori, RUC 10708945973), Lima, Perú.</p>`,
+pt: `<h1>Como apagar seus dados</h1>
+<div class="ok" id="code" hidden>Recebemos seu pedido de exclusão. Código de confirmação: <span></span></div>
+<p>O Lima Gestor guarda os dados de cada loja <b>no próprio computador dela</b>. A Lima Softwares <b>não guarda dados do seu perfil do Facebook</b> nem o conteúdo das mensagens do WhatsApp.</p>
+<h2>Se você conectou o WhatsApp pelo botão «Conectar meu WhatsApp»</h2>
+<p>A Lima Softwares só guarda, para reenviar as mensagens ao seu computador: o ID da sua conta do WhatsApp Business, o ID do seu computador e o endereço atual dele. A permissão da Meta passa ao seu computador uma única vez e é apagada do servidor em no máximo 30 minutos.</p>
+<ol>
+<li>No Lima Gestor: <b>Configurações → WhatsApp Business → Desativar robô</b>.</li>
+<li>Na Meta: <b>business.facebook.com/settings → Integrações → Apps conectados</b>, escolha «Lima Gestor Bot» e remova. Também pode ir ao Facebook → Configurações → <b>Integrações comerciais</b> e remover.</li>
+<li>Escreva para <a href="mailto:${EMAIL}">${EMAIL}</a> ou pelo WhatsApp ${WA} com o nome da sua loja, pedindo «apagar meus dados». Apagamos os dados de reenvio em até 30 dias e confirmamos.</li>
+</ol>
+<h2>Se você conectou o seu próprio app da Meta (configuração manual)</h2>
+<p>As mensagens vão direto da Meta para o seu computador: a Lima Softwares não recebe seu token, sua chave secreta nem suas mensagens. Desative o robô no Lima Gestor e, se quiser, apague o app em <b>developers.facebook.com/apps</b>.</p>
+<h2>Se você é cliente de uma loja e escreveu para o robô dela</h2>
+<ul>
+<li>Para o robô parar de escrever, envie <b>sair</b> ou <b>stop</b> nesse chat.</li>
+<li>Suas mensagens e pedidos estão no computador da loja: peça à loja para apagá-los. Se ela não responder, escreva para nós e encaminharemos o pedido.</li>
+</ul>
+<h2>Sua licença e seus pagamentos</h2>
+<p>Peça a exclusão em <a href="mailto:${EMAIL}">${EMAIL}</a>. Apagamos, exceto o que a lei obriga a guardar (por exemplo, registros de pagamento). Mais detalhes na <a href="privacidad.html">Política de privacidade</a>.</p>
+<p class="small">Responsável: Lima Softwares (Brayan Shamer Lima Condori, RUC 10708945973), Lima, Peru.</p>`,
+en: `<h1>How to delete your data</h1>
+<div class="ok" id="code" hidden>We received your deletion request. Confirmation code: <span></span></div>
+<p>Lima Gestor keeps each store's data <b>on the store's own computer</b>. Lima Softwares <b>does not keep data from your Facebook profile</b> or the content of WhatsApp messages.</p>
+<h2>If you connected WhatsApp with the «Connect my WhatsApp» button</h2>
+<p>To forward messages to your computer, Lima Softwares only keeps: your WhatsApp Business account ID, your computer's ID and its current address. Meta's permission is passed to your computer once and deleted from the server within 30 minutes.</p>
+<ol>
+<li>In Lima Gestor: <b>Settings → WhatsApp Business → Turn bot off</b>.</li>
+<li>In Meta: <b>business.facebook.com/settings → Integrations → Connected apps</b>, pick «Lima Gestor Bot» and remove it. You can also go to Facebook → Settings → <b>Business integrations</b> and remove it.</li>
+<li>Email <a href="mailto:${EMAIL}">${EMAIL}</a> or WhatsApp ${WA} with your store's name asking to «delete my data». We delete the forwarding data within 30 days and confirm.</li>
+</ol>
+<h2>If you connected your own Meta app (manual setup)</h2>
+<p>Messages go straight from Meta to your computer: Lima Softwares never receives your token, app secret or messages. Turn the bot off in Lima Gestor and, if you want, delete your app at <b>developers.facebook.com/apps</b>.</p>
+<h2>If you are a store's customer and messaged its bot</h2>
+<ul>
+<li>To stop the bot from messaging you, send <b>stop</b> in that chat.</li>
+<li>Your messages and orders are on the store's computer: ask the store to delete them. If it doesn't answer, write to us and we'll pass your request on.</li>
+</ul>
+<h2>Your license and payments</h2>
+<p>Ask for deletion at <a href="mailto:${EMAIL}">${EMAIL}</a>. We delete it, except what the law requires us to keep (for example, payment records). More in the <a href="privacidad.html">Privacy policy</a>.</p>
+<p class="small">Controller: Lima Softwares (Brayan Shamer Lima Condori, RUC 10708945973), Lima, Peru.</p>`};
+const qs = new URLSearchParams(location.search);
+let L = qs.get("l") || (() => { try { return localStorage.getItem("lg_lang"); } catch (e) { return null; } })() || (navigator.language || "es").slice(0, 2);
+if (!(L in C)) L = "es";
+const code = (qs.get("c") || "").replace(/[^0-9a-f]/gi, "").slice(0, 32);
+function render() {
+  document.documentElement.lang = L;
+  document.getElementById("c").innerHTML = C[L];
+  if (code) { const b = document.getElementById("code"); b.hidden = false; b.querySelector("span").textContent = code; }
+  document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.l === L));
+}
+document.querySelectorAll(".lang button").forEach((b) => b.onclick = () => { L = b.dataset.l; try { localStorage.setItem("lg_lang", L); } catch (e) {} render(); });
+render();
+</script>
+</body>
+</html>

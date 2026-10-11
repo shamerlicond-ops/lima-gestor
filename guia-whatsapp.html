@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía WhatsApp Business · Lima Gestor</title>
+<meta name="description" content="Guía paso a paso para conectar el WhatsApp Business de tu tienda con Lima Gestor usando tu propia app de Meta.">
+<link rel="icon" href="icono.png">
+<style>
+@font-face{font-family:"Manrope";font-weight:400;font-display:swap;src:url(fonts/manrope-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:600;font-display:swap;src:url(fonts/manrope-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:700;font-display:swap;src:url(fonts/manrope-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:800;font-display:swap;src:url(fonts/manrope-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Bricolage";font-weight:800;font-display:swap;src:url(fonts/bricolage-grotesque-latin-800-normal.woff2) format("woff2")}
+:root{--forest:#1F4D35;--night:#143524;--leaf:#2E6B4A;--lime:#B9DC5A;--pale:#E6F4B8;--ink:#18291F;--muted:#5E6E64;--line:#DAE2D7;--paper:#F3F6F1;--warn:#FBEFD5;--warnink:#6B4A0E}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;font-family:"Manrope",system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6;font-size:17px}
+a{color:var(--leaf)}
+.top{background:var(--night);color:#fff}
+.bar{max-width:1120px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:#fff;text-decoration:none;font-size:18px}.brand img{width:32px;height:32px}
+.lang{margin-left:auto;display:flex;gap:4px}
+.lang button{border:1px solid rgba(255,255,255,.25);background:transparent;color:#DCE8DC;border-radius:8px;padding:4px 10px;font:700 13px "Manrope",sans-serif;cursor:pointer}
+.lang button.on{background:var(--lime);color:var(--night);border-color:var(--lime)}
+.lang button:focus-visible,.toc a:focus-visible,.cta:focus-visible,#play:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.hero{background:var(--night);color:#fff;padding:28px 16px 56px}
+.hero .in{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center}
+h1{font:800 clamp(32px,4.4vw,52px)/1.04 "Bricolage",sans-serif;letter-spacing:-.02em;margin:0 0 16px;text-wrap:balance}
+.lead{color:#D5E4D2;margin:0 0 20px;max-width:46ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.meta span{background:rgba(185,220,90,.14);color:var(--pale);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px}
+.video{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#0d2318;box-shadow:0 24px 50px rgba(0,0,0,.35)}
+.video img{width:100%;height:100%;object-fit:cover;display:block}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+#play{position:absolute;inset:0;border:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+#play i{width:84px;height:84px;border-radius:50%;background:var(--lime);display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .15s}
+#play:hover i{transform:scale(1.06)}
+#play svg{width:34px;height:34px;fill:var(--night);margin-left:5px}
+.soon{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(10,24,16,.88);color:#fff;border-radius:12px;padding:10px 14px;font-weight:600;font-size:15px}
+.body{max-width:1120px;margin:0 auto;padding:40px 16px 64px;display:grid;grid-template-columns:250px 1fr;gap:48px}
+.toc{position:sticky;top:20px;align-self:start;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--muted);font-weight:700;font-size:15px;padding:8px 10px;border-radius:10px;line-height:1.3}
+.toc a b{flex:none;width:26px;height:26px;border-radius:50%;background:#E3EADF;color:var(--forest);display:grid;place-items:center;font-size:13px}
+.toc a:hover{background:#E8EEE5;color:var(--ink)}
+.toc a.on{background:var(--forest);color:#fff}.toc a.on b{background:var(--lime);color:var(--night)}
+.ch{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 30px;margin-bottom:18px}
+.ch h2{display:flex;align-items:center;gap:14px;font:800 27px/1.15 "Bricolage",sans-serif;letter-spacing:-.01em;margin:0 0 14px;color:var(--forest)}
+.ch h2 b{flex:none;width:40px;height:40px;border-radius:50%;background:var(--lime);color:var(--night);display:grid;place-items:center;font-size:20px}
+.ch ol,.ch ul{margin:0;padding-left:24px;display:grid;gap:9px}
+.ch li::marker{font-weight:800;color:var(--leaf)}
+.ch ul{list-style:none;padding-left:0}
+.ch ul li{padding-left:30px;position:relative}
+.ch ul li::before{content:"";position:absolute;left:4px;top:.45em;width:14px;height:8px;border-left:3px solid var(--leaf);border-bottom:3px solid var(--leaf);transform:rotate(-45deg)}
+.q{font-weight:700;color:var(--forest)}
+code{font:700 .86em "Manrope",sans-serif;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+@media (max-width:600px){code{white-space:normal;word-break:break-all}}
+.alert{background:var(--warn);color:var(--warnink);border-radius:14px;padding:16px 20px;margin:0 0 18px;font-weight:600}
+.alert strong{display:block;font-weight:800;margin-bottom:2px}
+.help{background:var(--forest);color:#fff;border-radius:18px;padding:26px 30px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.help p{margin:0;flex:1;min-width:240px;color:#DCE8DC}.help p strong{display:block;color:#fff;font:800 22px "Bricolage",sans-serif;margin-bottom:4px}
+.cta{display:inline-flex;align-items:center;gap:10px;background:var(--lime);color:var(--night);text-decoration:none;font-weight:800;border-radius:12px;padding:13px 20px}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:0 16px 40px}
+@media (max-width:900px){.ch h2{font-size:23px}.hero .in{grid-template-columns:1fr;gap:26px}.body{grid-template-columns:1fr;gap:20px}.toc{position:static;flex-direction:row;flex-wrap:wrap}.toc a span{display:none}.ch{padding:22px 20px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}#play i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="bar">
+  <a class="brand" href="./"><img src="icono.png" alt="">Lima Gestor</a>
+  <div class="lang" role="group" aria-label="Idioma"><button data-l="es">ES</button><button data-l="pt">PT</button><button data-l="en">EN</button></div>
+</div></header>
+<section class="hero"><div class="in">
+  <div>
+    <h1 data-t="title"></h1>
+    <p class="lead" data-t="lead"></p>
+    <div class="meta"><span data-t="m1"></span><span data-t="m2"></span><span data-t="m3"></span></div>
+  </div>
+  <div class="video" id="player">
+    <img src="img/guia_whatsapp.jpg" alt="" width="1280" height="720">
+    <button id="play" type="button"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></i><span data-t="play" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span></button>
+    <div class="soon" id="soon" data-t="soon" hidden></div>
+  </div>
+</div></section>
+<main class="body">
+  <nav class="toc" id="toc" aria-label="Pasos"></nav>
+  <div>
+    <div class="alert"><strong data-t="safe_t"></strong><span data-t="safe"></span></div>
+    <div id="chapters"></div>
+    <div class="help"><p><strong data-t="help_t"></strong><span data-t="help"></span></p>
+      <a class="cta" id="wa" href="https://wa.me/51974548596" target="_blank" rel="noopener" data-t="help_btn"></a></div>
+  </div>
+</main>
+<footer data-t="foot"></footer>
+<script>
+// Videos «No listados» de YouTube: pega aquí el ID de cada uno (lo que va después de "v=" o de "youtu.be/").
+const GUIA_YT = { es: "", pt: "", en: "" };
+const G = {"es": [{"n": 0, "t": "Antes de empezar", "s": ["El Facebook del dueño de la tienda (con tu contraseña: nadie más la escribe).", "Un número para el bot que no tenga WhatsApp instalado: un chip antiguo o el fijo de la tienda.", "Lima Gestor con el bot activo en tu licencia.", "Unos 20 minutos. No se paga nada a Meta para empezar."]}, {"n": 1, "t": "Crea la cuenta comercial de Meta", "s": ["Abre tu navegador y escribe business.facebook.com", "Entra al resultado oficial: Meta for Business.", "Toca «Continuar con Facebook» y entra con el Facebook del dueño de la tienda.", "Confirma que es tu cuenta y toca «Continuar».", "Escribe tu contraseña y toca «Iniciar sesión». Tu contraseña no se la das a nadie, ni a soporte.", "Abre el menú de portfolios y toca «Crear un portfolio comercial».", "Escribe el nombre de tu tienda, tu nombre y tu correo, y toca «Crear».", "Aquí no hace falta agregar nada: toca «Siguiente»."]}, {"n": 2, "t": "Crea la app y agrega WhatsApp", "s": ["Ahora entra a developers.facebook.com", "Toca «Mis apps».", "Toca «Crear app».", "Ponle un nombre, por ejemplo «Bot de mi tienda», y toca «Siguiente».", "En casos de uso, busca el de WhatsApp y márcalo.", "Toca «Siguiente».", "Elige el portfolio de tu tienda y toca «Siguiente».", "En requisitos no hay nada que hacer: toca «Siguiente».", "Revisa el resumen y toca «Crear app». Meta puede pedirte tu contraseña otra vez.", "Tu app está lista. Toca «Personalizar el caso de uso» de WhatsApp.", "Elige otra vez el portfolio de tu tienda y toca «Continuar»."]}, {"n": 3, "t": "Haz una prueba", "s": ["Abre «Paso 1. Pruébalo».", "Meta te da un número de prueba. Toca «Generar token» para probar ahora.", "Confirma con «Continuar». Este token dura pocas horas: solo sirve para probar.", "En «Para», agrega tu número de WhatsApp (puedes poner hasta 5).", "Confirma el código que Meta te envía a ese WhatsApp.", "Toca «Enviar mensaje»: si te llega, la app funciona."]}, {"n": 4, "t": "Agrega el número real", "s": ["Abre «Paso 2: Configuración de producción» y toca «Agregar número de teléfono».", "Pon el nombre de tu tienda y el número del bot (sin WhatsApp instalado).", "Confirma el código por SMS o por llamada.", "Copia el «Identificador del número de teléfono» y el «Identificador de la cuenta de WhatsApp Business»."]}, {"n": 5, "t": "Crea la clave permanente", "s": ["Entra a business.facebook.com/settings → Usuarios → Usuarios del sistema.", "Toca «Agregar», ponle un nombre (por ejemplo «bot») y el rol Administrador.", "«Asignar activos»: marca tu app con control total y tu cuenta de WhatsApp.", "«Generar token»: elige tu app, caducidad «Nunca» y los permisos whatsapp_business_messaging y whatsapp_business_management.", "Copia el token. Es como una llave de tu WhatsApp: no lo envíes por chat ni lo compartas."]}, {"n": 6, "t": "Clave secreta y publicar la app", "s": ["En tu app: Configuración de la app → Básica.", "Copia el «Identificador de la app» y la «Clave secreta de la app».", "Pon un enlace de política de privacidad (sirve la página de Facebook de tu tienda).", "Toca «Publicar» para dejar la app activa."]}, {"n": 7, "t": "Conéctalo en Lima Gestor", "s": ["Ahora abre Lima Gestor → Configuración → WhatsApp Business.", "Baja hasta «Avanzado» y abre la configuración manual.", "Pega el identificador del número de teléfono y el de la cuenta de WhatsApp Business.", "Pega el token permanente.", "Pega el identificador de la app y la clave secreta.", "Toca «Conectar». Lima Gestor prueba los datos y configura lo demás solo."]}, {"n": 8, "t": "¡Listo!", "s": ["Escríbele «hola» al número del bot desde otro celular.", "El bot responde mientras Lima Gestor esté abierto y con internet.", "¿Dudas? En Lima Gestor toca «Pedir instalación asistida» y te ayudamos."]}], "pt": [{"n": 0, "t": "Antes de começar", "s": ["O Facebook do dono da loja (com a sua senha: ninguém mais digita).", "Um número para o robô sem WhatsApp instalado: um chip antigo ou o fixo da loja.", "Lima Gestor com o robô ativo na sua licença.", "Uns 20 minutos. Não se paga nada à Meta para começar."]}, {"n": 1, "t": "Crie a conta empresarial da Meta", "s": ["Abra o navegador e digite business.facebook.com", "Entre no resultado oficial: Meta for Business.", "Toque em «Continuar com o Facebook» e entre com o Facebook do dono da loja.", "Confirme que é a sua conta e toque em «Continuar».", "Digite a sua senha e toque em «Entrar». A senha não se passa para ninguém, nem para o suporte.", "Abra o menu de portfólios e toque em «Criar um portfólio empresarial».", "Digite o nome da loja, o seu nome e o seu e-mail, e toque em «Criar».", "Aqui não precisa adicionar nada: toque em «Avançar»."]}, {"n": 2, "t": "Crie o app e adicione o WhatsApp", "s": ["Agora entre em developers.facebook.com", "Toque em «Meus apps».", "Toque em «Criar app».", "Dê um nome, por exemplo «Robô da minha loja», e toque em «Avançar».", "Nos casos de uso, procure o do WhatsApp e marque.", "Toque em «Avançar».", "Escolha o portfólio da sua loja e toque em «Avançar».", "Em requisitos não há nada a fazer: toque em «Avançar».", "Confira o resumo e toque em «Criar app». A Meta pode pedir a sua senha de novo.", "O app está pronto. Toque em «Personalizar o caso de uso» do WhatsApp.", "Escolha de novo o portfólio da sua loja e toque em «Continuar»."]}, {"n": 3, "t": "Faça um teste", "s": ["Abra «Etapa 1. Teste».", "A Meta dá um número de teste. Toque em «Gerar token» para testar agora.", "Confirme com «Continuar». Esse token dura poucas horas: serve só para testar.", "Em «Para», adicione o seu número de WhatsApp (até 5).", "Confirme o código que a Meta envia para esse WhatsApp.", "Toque em «Enviar mensagem»: se chegar, o app funciona."]}, {"n": 4, "t": "Adicione o número real", "s": ["Abra «Etapa 2: Configuração de produção» e toque em «Adicionar número de telefone».", "Coloque o nome da sua loja e o número do robô (sem WhatsApp instalado).", "Confirme o código por SMS ou ligação.", "Copie a «Identificação do número de telefone» e a «Identificação da conta do WhatsApp Business»."]}, {"n": 5, "t": "Crie a chave permanente", "s": ["Entre em business.facebook.com/settings → Usuários → Usuários do sistema.", "Toque em «Adicionar», dê um nome (por exemplo «robo») e a função Administrador.", "«Atribuir ativos»: marque o seu app com controle total e a sua conta do WhatsApp.", "«Gerar token»: escolha o app, validade «Nunca» e as permissões whatsapp_business_messaging e whatsapp_business_management.", "Copie o token. Ele é a chave do seu WhatsApp: não envie por chat nem compartilhe."]}, {"n": 6, "t": "Chave secreta e publicar o app", "s": ["No seu app: Configurações do app → Básico.", "Copie a «Identificação do app» e a «Chave secreta do app».", "Coloque um link de política de privacidade (serve a página do Facebook da loja).", "Toque em «Publicar» para deixar o app ativo."]}, {"n": 7, "t": "Conecte no Lima Gestor", "s": ["Agora abra o Lima Gestor → Configurações → WhatsApp Business.", "Desça até «Avançado» e abra a configuração manual.", "Cole a identificação do número de telefone e a da conta do WhatsApp Business.", "Cole o token permanente.", "Cole a identificação do app e a chave secreta.", "Toque em «Conectar». O Lima Gestor testa os dados e configura o resto sozinho."]}, {"n": 8, "t": "Pronto!", "s": ["Mande «oi» para o número do robô de outro celular.", "O robô responde enquanto o Lima Gestor estiver aberto e com internet.", "Dúvidas? No Lima Gestor toque em «Pedir instalação assistida» e ajudamos você."]}], "en": [{"n": 0, "t": "Before you start", "s": ["The store owner's Facebook (you type your own password, nobody else).", "A number for the bot with no WhatsApp installed: an old SIM or the store's landline.", "Lima Gestor with the bot active in your license.", "About 20 minutes. Nothing to pay Meta to get started."]}, {"n": 1, "t": "Create your Meta business account", "s": ["Open your browser and type business.facebook.com", "Open the official result: Meta for Business.", "Tap «Continue with Facebook» and sign in with the store owner's Facebook.", "Confirm it's your account and tap «Continue».", "Type your password and tap «Log in». Never give your password to anyone, not even support.", "Open the portfolio menu and tap «Create a business portfolio».", "Enter your store's name, your name and your email, then tap «Create».", "Nothing to add here: tap «Next»."]}, {"n": 2, "t": "Create the app and add WhatsApp", "s": ["Now go to developers.facebook.com", "Tap «My Apps».", "Tap «Create app».", "Give it a name, for example «My store bot», and tap «Next».", "Under use cases, find the WhatsApp one and select it.", "Tap «Next».", "Choose your store's portfolio and tap «Next».", "Nothing to do under requirements: tap «Next».", "Check the summary and tap «Create app». Meta may ask for your password again.", "Your app is ready. Tap «Customize use case» for WhatsApp.", "Choose your store's portfolio again and tap «Continue»."]}, {"n": 3, "t": "Run a test", "s": ["Open «Step 1. Try it out».", "Meta gives you a test number. Tap «Generate token» to try it now.", "Confirm with «Continue». This token lasts a few hours: it's only for testing.", "Under «To», add your WhatsApp number (up to 5).", "Confirm the code Meta sends to that WhatsApp.", "Tap «Send message»: if it arrives, the app works."]}, {"n": 4, "t": "Add your real number", "s": ["Open «Step 2: Production setup» and tap «Add phone number».", "Enter your store's name and the bot's number (no WhatsApp installed).", "Confirm the code by SMS or phone call.", "Copy the «Phone number ID» and the «WhatsApp Business Account ID»."]}, {"n": 5, "t": "Create the permanent key", "s": ["Go to business.facebook.com/settings → Users → System users.", "Tap «Add», give it a name (for example «bot») and the Admin role.", "«Assign assets»: select your app with full control and your WhatsApp account.", "«Generate token»: pick your app, expiry «Never» and the permissions whatsapp_business_messaging and whatsapp_business_management.", "Copy the token. It's the key to your WhatsApp: don't send it by chat or share it."]}, {"n": 6, "t": "App secret and go live", "s": ["In your app: App settings → Basic.", "Copy the «App ID» and the «App secret».", "Add a privacy policy link (your store's Facebook page works).", "Tap «Publish» to set the app live."]}, {"n": 7, "t": "Connect it in Lima Gestor", "s": ["Now open Lima Gestor → Settings → WhatsApp Business.", "Scroll down to «Advanced» and open the manual setup.", "Paste the phone number ID and the WhatsApp Business account ID.", "Paste the permanent token.", "Paste the app ID and the app secret.", "Tap «Connect». Lima Gestor checks the details and sets up the rest by itself."]}, {"n": 8, "t": "Done!", "s": ["Send «hi» to the bot's number from another phone.", "The bot replies while Lima Gestor is open and online.", "Questions? In Lima Gestor tap «Request assisted setup» and we'll help you."]}]};
+const T = {
+  title: ["Conecta el WhatsApp Business de tu tienda", "Conecte o WhatsApp Business da sua loja", "Connect your store's WhatsApp Business"],
+  lead: ["Paso a paso para conectar Lima Gestor con tu propia app de Meta. Lo haces tú, con tu Facebook, y tu número queda a nombre de tu tienda.", "Passo a passo para conectar o Lima Gestor com o seu próprio app da Meta. Você faz com o seu Facebook, e o número fica no nome da sua loja.", "Step by step to connect Lima Gestor with your own Meta app. You do it with your Facebook, and the number stays in your store's name."],
+  m1: ["Unos 20 minutos", "Uns 20 minutos", "About 20 minutes"],
+  m2: ["Sin pagar nada a Meta", "Sem pagar nada à Meta", "Nothing to pay Meta"],
+  m3: ["Video de 6 minutos", "Vídeo de 6 minutos", "6-minute video"],
+  play: ["Reproducir el video", "Reproduzir o vídeo", "Play the video"],
+  soon: ["El video se publica en unos días. Mientras tanto, sigue los pasos de abajo.", "O vídeo sai em poucos dias. Enquanto isso, siga os passos abaixo.", "The video is coming in a few days. Meanwhile, follow the steps below."],
+  safe_t: ["Tus claves son solo tuyas", "Suas chaves são só suas", "Your keys are yours only"],
+  safe: ["Nunca envíes tu contraseña, el token ni la clave secreta por chat o correo, ni siquiera a soporte. Se pegan directo en Lima Gestor, en tu computadora.", "Nunca envie sua senha, o token nem a chave secreta por chat ou e-mail, nem para o suporte. Eles são colados direto no Lima Gestor, no seu computador.", "Never send your password, the token or the app secret by chat or email, not even to support. They're pasted straight into Lima Gestor on your computer."],
+  help_t: ["¿Prefieres que te acompañemos?", "Prefere que a gente acompanhe?", "Want us to walk you through it?"],
+  help: ["Hacemos la instalación asistida por videollamada contigo presente. Tú escribes tus claves; nosotros te guiamos.", "Fazemos a instalação assistida por videochamada com você presente. Você digita suas chaves; nós guiamos.", "We do an assisted setup on a video call with you present. You type your keys; we guide you."],
+  help_btn: ["Escribir por WhatsApp", "Falar pelo WhatsApp", "Message us on WhatsApp"],
+  help_msg: ["Hola, quiero ayuda para conectar el WhatsApp Business de mi tienda con Lima Gestor.", "Olá, quero ajuda para conectar o WhatsApp Business da minha loja com o Lima Gestor.", "Hi, I'd like help connecting my store's WhatsApp Business to Lima Gestor."],
+  foot: ["Lima Gestor es desarrollado por Lima Softwares. WhatsApp y Meta son marcas de Meta Platforms, Inc.", "O Lima Gestor é desenvolvido pela Lima Softwares. WhatsApp e Meta são marcas da Meta Platforms, Inc.", "Lima Gestor is developed by Lima Softwares. WhatsApp and Meta are trademarks of Meta Platforms, Inc."],
+};
+const LI = { es: 0, pt: 1, en: 2 };
+const qs = new URLSearchParams(location.search);
+let L = qs.get("l") || (() => { try { return localStorage.getItem("lg_lang"); } catch (e) { return null; } })() || ((navigator.language || "es").slice(0, 2));
+if (!(L in LI)) L = "es";
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const fmt = (s) => esc(s)
+  .replace(/«([^»]+)»/g, '<span class="q">«$1»</span>')
+  .replace(/(whatsapp_business_\w+|business\.facebook\.com\/settings|developers\.facebook\.com|business\.facebook\.com)/g, "<code>$1</code>");
+function render() {
+  document.documentElement.lang = L;
+  document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = T[e.dataset.t][LI[L]]; });
+  document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.l === L));
+  document.getElementById("wa").href = "https://wa.me/51974548596?text=" + encodeURIComponent(T.help_msg[LI[L]]);
+  document.getElementById("soon").hidden = !!GUIA_YT[L] || document.querySelector("#player iframe") !== null;
+  const chs = G[L];
+  document.getElementById("toc").innerHTML = chs.map((c) => `<a href="#c${c.n}"><b>${c.n >= 1 && c.n <= 7 ? c.n : c.n === 0 ? "·" : "✓"}</b><span>${esc(c.t)}</span></a>`).join("");
+  document.getElementById("chapters").innerHTML = chs.map((c) => {
+    const num = c.n >= 1 && c.n <= 7;
+    const list = c.s.map((s) => `<li>${fmt(s)}</li>`).join("");
+    return `<section class="ch" id="c${c.n}"><h2>${num ? `<b>${c.n}</b>` : ""}${esc(c.t)}</h2>${num ? `<ol>${list}</ol>` : `<ul>${list}</ul>`}</section>`;
+  }).join("");
+  spy();
+}
+document.querySelectorAll(".lang button").forEach((b) => b.onclick = () => {
+  L = b.dataset.l; try { localStorage.setItem("lg_lang", L); } catch (e) {}
+  history.replaceState(null, "", "?l=" + L + location.hash); render();
+});
+document.getElementById("play").onclick = () => {
+  const id = GUIA_YT[L];
+  if (!id) { document.getElementById("soon").hidden = false; return; }
+  document.getElementById("player").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0" title="${esc(T.title[LI[L]])}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+};
+let io;
+function spy() {
+  if (io) io.disconnect();
+  if (!("IntersectionObserver" in window)) return;
+  io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) document.querySelectorAll(".toc a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-30% 0px -60% 0px" });
+  document.querySelectorAll(".ch").forEach((s) => io.observe(s));
+}
+render();
+</script>
+</body>
+</html>

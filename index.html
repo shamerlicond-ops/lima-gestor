@@ -283,6 +283,7 @@
     <h2><span data-t="b_t"></span><span class="tag" data-t="b_tag"></span></h2>
     <p style="margin:16px 0 24px" data-t="b_p"></p>
     <ul class="ticks"><li data-t="b_1"></li><li data-t="b_2"></li><li data-t="b_3"></li><li data-t="b_4"></li><li data-t="b_5"></li><li data-t="b_6"></li></ul>
+    <p style="margin-top:22px"><a class="btn s" id="guialink" href="guia-whatsapp.html" data-t="b_guide"></a></p>
   </div>
   <div class="phone"><div class="screen">
     <div class="wa-top"><span class="av">🏪</span><span><span data-t="chat_store"></span><small data-t="chat_bus"></small></span></div>
@@ -352,13 +353,14 @@
   <div><b>Lima Softwares</b><span data-t="foot_tag"></span><br>Lima, Perú</div>
   <div><b data-t="foot_prod"></b><a href="#funciones" data-t="nav_feat"></a><a href="#bot" data-t="nav_bot"></a><a href="#planes" data-t="nav_plans"></a><a href="#descargar" data-t="nav_dl"></a></div>
   <div><b data-t="foot_help"></b><a data-wa>WhatsApp +51 974 548 596</a><a href="mailto:shamer.licond@gmail.com">shamer.licond@gmail.com</a><a href="#preguntas" data-t="nav_faq"></a></div>
-  <div><b>Legal</b><a href="terminos.html" data-t="foot_terms"></a><a href="privacidad.html" data-t="foot_priv"></a><a href="privacidad.html#eliminar" data-t="foot_del"></a></div>
+  <div><b>Legal</b><a href="terminos.html" data-t="foot_terms"></a><a href="privacidad.html" data-t="foot_priv"></a><a href="eliminar-datos.html" data-t="foot_del"></a></div>
 </div><div class="copy">© <span id="y">2026</span> Lima Softwares</div></footer>
 
 <script>
 const WA = "51974548596";
 const T = {
   nav_feat: ["Funciones", "Funções", "Features"], nav_vid: ["Videos", "Vídeos", "Videos"],
+  b_guide: ["Guía: conectar tu WhatsApp Business", "Guia: conectar o seu WhatsApp Business", "Guide: connect your WhatsApp Business"],
   vd_t: ["Aprende a usarlo en videos cortos", "Aprenda a usar em vídeos curtos", "Learn it with short videos"],
   vd_p: ["Un curso paso a paso: instalar, cargar tus productos, vender, fiados y caja. Cada video dura pocos minutos.", "Um curso passo a passo: instalar, cadastrar produtos, vender, fiado e caixa. Cada vídeo dura poucos minutos.", "A step-by-step course: install, add your products, sell, store credit and the cash register. Each video takes just a few minutes."],
   vd_btn: ["Ver el curso en YouTube", "Ver o curso no YouTube", "Watch the course on YouTube"],
@@ -498,9 +500,13 @@ const REF = (new URLSearchParams(location.search).get("ref") || "").toUpperCase(
 T.ref_box = ["🎁 Te recomendó una tienda que ya usa Lima Gestor. Cuando pagues tu licencia, escribe su código <b>{c}</b> en «Código de quien te recomendó».", "🎁 Uma loja que já usa o Lima Gestor te indicou. Quando pagar a licença, coloque o código <b>{c}</b> em «Código de quem indicou».", "🎁 A store that already uses Lima Gestor referred you. When you pay for your license, enter code <b>{c}</b> under «Referral code»."];
 const LI = { es: 0, pt: 1, en: 2 };
 let L = "es", C = "PE", VER = null, userC = false;
-const YT_LIST = "UUdNh2Qo5dHc3_5dJ9-C7aVA";  // videos del canal @LimaGestor (cambiar por el ID de la lista del curso cuando exista)
+// Curso en orden (00, 01, 02…): pega aquí el ID de la lista «Curso Lima Gestor (español)»
+// (lo que va después de "list=" en su enlace). Mientras esté vacío se usan los videos del canal (salen del más nuevo al más antiguo).
+const YT_COURSE = "PLBAmHKLbP9FM";
+const YT_LIST = YT_COURSE || "UUdNh2Qo5dHc3_5dJ9-C7aVA";
+if (YT_COURSE) document.querySelector('[data-t="vd_btn"]').href = "https://www.youtube.com/playlist?list=" + YT_COURSE;
 document.getElementById("playbtn").onclick = () => {
-  document.getElementById("player").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=${YT_LIST}&autoplay=1&rel=0" title="Lima Gestor" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  document.getElementById("player").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=${YT_LIST}&index=0&autoplay=1&rel=0" title="Lima Gestor" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
 };
 const tx = (k) => (T[k] || [k, k, k])[LI[L]];
 const fmt = (v) => {
@@ -508,6 +514,7 @@ const fmt = (v) => {
   return PRICES[C].cur + v.toLocaleString(loc, { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
 };
 function render() {
+  document.getElementById("guialink").href = "guia-whatsapp.html?l=" + L;
   document.documentElement.lang = L;
   document.querySelectorAll("[data-set]").forEach((b) => b.classList.toggle("on", b.dataset.set === L));
   document.querySelectorAll("[data-t]").forEach((el) => { const v = tx(el.dataset.t); if (el.hasAttribute("data-html")) el.innerHTML = v; else el.textContent = v; });
