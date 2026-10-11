@@ -1,6 +1,6 @@
 # Lima Softwares — web
 
-Sitio de **Lima Gestor**: https://limasoftwares.pages.dev
+Sitio de **Lima Gestor**: https://limasoftwares.com
 
 - `index.html` — la página (ES / PT / EN).
 - `version.json` + `descarga/` — la última versión del instalador (en pedazos de 20 MB; la página los junta al descargar).
