@@ -98,6 +98,16 @@
   ul.ticks li::before { content:""; position:absolute; left:2px; top:.5em; width:14px; height:8px; border-left:3px solid var(--leaf); border-bottom:3px solid var(--leaf); transform:rotate(-45deg); }
 
   /* ---------- bot */
+  .vids { display:grid; grid-template-columns:.8fr 1.3fr; gap:56px; align-items:center; }
+  .vids .btns { margin-top:24px; }
+  .player { position:relative; aspect-ratio:16/9; max-width:100%; border-radius:16px; overflow:hidden; background:var(--night); box-shadow:0 18px 40px rgba(31,77,53,.18); }
+  .player img, .player iframe { position:absolute; inset:0; width:100%; height:100%; border:0; object-fit:cover; }
+  .player button { position:absolute; inset:0; width:100%; border:0; background:transparent; cursor:pointer; padding:0; }
+  .player .play { position:absolute; left:72%; top:52%; width:84px; height:84px; margin:-42px 0 0 -42px; border-radius:50%; background:var(--lime); display:grid; place-items:center; box-shadow:0 10px 30px rgba(0,0,0,.35); transition:transform .15s; }
+  .player button:hover .play, .player button:focus-visible .play { transform:scale(1.08); }
+  .player .play svg { width:34px; height:34px; margin-left:5px; fill:var(--night); }
+  .vids small { display:block; color:var(--muted, #5b6b60); font-size:14px; margin-top:12px; }
+  @media (max-width:860px) { .vids { grid-template-columns:1fr; gap:28px; } }
   .botsec { background:var(--night); color:#fff; }
   .botsec h2 { color:#fff; }
   .botsec p { color:#C3D5C0; }
@@ -193,6 +203,7 @@
   <nav class="links" id="nav">
     <a href="#funciones" data-t="nav_feat"></a>
     <a href="#bot" data-t="nav_bot"></a>
+    <a href="#videos" data-t="nav_vid"></a>
     <a href="#planes" data-t="nav_plans"></a>
     <a href="#preguntas" data-t="nav_faq"></a>
     <a href="#descargar" data-t="nav_dl"></a>
@@ -248,6 +259,22 @@
     <div class="txt"><h3 data-t="k_t"></h3><p data-t="k_p"></p>
       <ul class="ticks"><li data-t="k_1"></li><li data-t="k_2"></li><li data-t="k_3"></li></ul></div>
     <div class="frame"><img data-img="caja" alt="" loading="lazy"></div>
+  </div>
+</div></section>
+
+<section id="videos" style="padding-top:20px"><div class="wrap vids">
+  <div>
+    <h2 data-t="vd_t"></h2>
+    <p class="sub" style="margin-top:12px" data-t="vd_p"></p>
+    <div class="btns">
+      <a class="btn dark" href="https://www.youtube.com/@LimaGestor" target="_blank" rel="noopener" data-t="vd_btn"></a>
+      <a class="btn s" href="https://www.youtube.com/@LimaGestor?sub_confirmation=1" target="_blank" rel="noopener" data-t="vd_sub"></a>
+    </div>
+    <small data-t="vd_note"></small>
+  </div>
+  <div class="player" id="player">
+    <img src="img/video_curso.jpg" alt="" loading="lazy">
+    <button type="button" id="playbtn"><span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><span class="sr" data-t="vd_play" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></span></button>
   </div>
 </div></section>
 
@@ -331,7 +358,13 @@
 <script>
 const WA = "51974548596";
 const T = {
-  nav_feat: ["Funciones", "Funções", "Features"], nav_bot: ["Bot de WhatsApp", "Robô de WhatsApp", "WhatsApp bot"], nav_plans: ["Planes", "Planos", "Pricing"], nav_faq: ["Preguntas", "Perguntas", "FAQ"], nav_dl: ["Descargar", "Baixar", "Download"],
+  nav_feat: ["Funciones", "Funções", "Features"], nav_vid: ["Videos", "Vídeos", "Videos"],
+  vd_t: ["Aprende a usarlo en videos cortos", "Aprenda a usar em vídeos curtos", "Learn it with short videos"],
+  vd_p: ["Un curso paso a paso: instalar, cargar tus productos, vender, fiados y caja. Cada video dura pocos minutos.", "Um curso passo a passo: instalar, cadastrar produtos, vender, fiado e caixa. Cada vídeo dura poucos minutos.", "A step-by-step course: install, add your products, sell, store credit and the cash register. Each video takes just a few minutes."],
+  vd_btn: ["Ver el curso en YouTube", "Ver o curso no YouTube", "Watch the course on YouTube"],
+  vd_sub: ["Suscribirme", "Inscrever-me", "Subscribe"],
+  vd_play: ["Reproducir el video", "Reproduzir o vídeo", "Play the video"],
+  vd_note: ["Los videos están en español.", "Os vídeos estão em espanhol, por enquanto.", "Videos are in Spanish for now."], nav_bot: ["Bot de WhatsApp", "Robô de WhatsApp", "WhatsApp bot"], nav_plans: ["Planes", "Planos", "Pricing"], nav_faq: ["Preguntas", "Perguntas", "FAQ"], nav_dl: ["Descargar", "Baixar", "Download"],
   cta_try: ["Pruébalo gratis 15 días", "Teste grátis por 15 dias", "Try it free for 15 days"],
   cta_wa: ["Hablar por WhatsApp", "Falar no WhatsApp", "Chat on WhatsApp"],
   kicker: ["Sistema de ventas para bodegas, minimarkets y tiendas", "Sistema de vendas para mercadinhos e lojas", "Point of sale for corner stores and small shops"],
@@ -465,6 +498,10 @@ const REF = (new URLSearchParams(location.search).get("ref") || "").toUpperCase(
 T.ref_box = ["🎁 Te recomendó una tienda que ya usa Lima Gestor. Cuando pagues tu licencia, escribe su código <b>{c}</b> en «Código de quien te recomendó».", "🎁 Uma loja que já usa o Lima Gestor te indicou. Quando pagar a licença, coloque o código <b>{c}</b> em «Código de quem indicou».", "🎁 A store that already uses Lima Gestor referred you. When you pay for your license, enter code <b>{c}</b> under «Referral code»."];
 const LI = { es: 0, pt: 1, en: 2 };
 let L = "es", C = "PE", VER = null, userC = false;
+const YT_LIST = "UUdNh2Qo5dHc3_5dJ9-C7aVA";  // videos del canal @LimaGestor (cambiar por el ID de la lista del curso cuando exista)
+document.getElementById("playbtn").onclick = () => {
+  document.getElementById("player").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=${YT_LIST}&autoplay=1&rel=0" title="Lima Gestor" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+};
 const tx = (k) => (T[k] || [k, k, k])[LI[L]];
 const fmt = (v) => {
   const loc = C === "BR" ? "pt-BR" : "es-PE";

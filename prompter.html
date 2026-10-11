@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<title>Teleprompter Lima Gestor</title>
+<style>
+/* Una sola pantalla negra: texto arriba (cerca del lente), controles grandes abajo para el pulgar. */
+@font-face { font-family: "Manrope"; font-weight: 400; font-display: swap; src: url(fonts/manrope-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Manrope"; font-weight: 700; font-display: swap; src: url(fonts/manrope-latin-700-normal.woff2) format("woff2"); }
+:root {
+  --bg: #000; --ink: #F4F1E6; --dim: #8C9488; --lime: #B9DC5A; --rec: #E5484D;
+  --line: #2A2F28; --btn: #151914;
+  --read: "Manrope", "Segoe UI", Roboto, Arial, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--read); margin: 0;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; overflow: hidden; }
+.app { height: 100%; display: grid; grid-template-rows: auto 1fr auto auto;
+  padding: env(safe-area-inset-top, 0px) 16px 0; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 6px; }
+.tag { color: var(--lime); font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.topic { color: var(--dim); font-size: 15px; text-align: right; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stage { position: relative; overflow: hidden; min-height: 0; }
+.scroll { height: 100%; overflow-y: auto; scrollbar-width: none; }
+.scroll::-webkit-scrollbar { display: none; }
+.text { font-size: var(--fs, 46px); line-height: 1.32; font-weight: 700; margin: 0; padding-block: 8px 60vh; text-wrap: pretty; }
+.dir { display: block; font-weight: 400; color: var(--dim); font-size: .48em; line-height: 1.4; margin-top: .6em; }
+.dir:first-child { margin-top: 0; margin-bottom: .5em; }
+.mirror .text { transform: scaleX(-1); }
+.say { color: var(--lime); }
+.recdot { display: flex; align-items: center; gap: 8px; color: var(--rec); font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.recdot:not([hidden]) ~ .topic, .top:has(.recdot:not([hidden])) .topic { display: none; }
+.recdot::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--rec); animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.take { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-block: 8px; border-top: 1px solid var(--line); }
+.take .info { flex: 1 1 140px; min-width: 0; color: var(--lime); font-size: 16px; font-weight: 700; }
+.take .info small { display: block; color: var(--dim); font-weight: 400; font-size: 13px; overflow-wrap: anywhere; }
+.bar { display: flex; flex-wrap: nowrap; gap: 8px; padding-block: 8px calc(10px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button, a.btn { font: inherit; color: var(--ink); background: var(--btn); border: 1px solid var(--line); border-radius: 12px;
+  min-height: 52px; min-width: 52px; padding: 0 14px; font-size: 17px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+button:focus-visible, a.btn:focus-visible { outline: 3px solid var(--lime); outline-offset: 2px; }
+button.go { background: var(--lime); color: #10200F; border-color: var(--lime); }
+button.rec { background: var(--rec); color: #fff; border-color: var(--rec); flex: 1 1 auto; min-width: 0; padding: 0 10px; }
+button.on { border-color: var(--lime); color: var(--lime); }
+.nav button { min-width: 52px; font-size: 24px; }
+.nav #list { font-size: 17px; }
+.speed { color: var(--dim); font-size: 15px; font-variant-numeric: tabular-nums; min-width: 3em; text-align: center; }
+.sheet { position: fixed; inset: 0; background: rgba(0,0,0,.94); overflow-y: auto; z-index: 5;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 24px; }
+.sheet-in { width: 100%; max-width: 560px; margin: 0 auto; display: grid; gap: 8px; }
+.sheet h2 { margin: 4px 0 6px; font-size: 20px; color: var(--lime); }
+.pick { display: grid !important; grid-template-columns: 40px 1fr auto; align-items: center; text-align: left; font-weight: 400 !important; }
+.pick b { color: var(--lime); font-variant-numeric: tabular-nums; }
+.pick em { font-style: normal; color: var(--lime); }
+.pick.cur { border-color: var(--lime); }
+.tip { color: var(--dim); font-size: 15px; line-height: 1.5; margin: 6px 0 0; }
+.msg { color: var(--rec); font-size: 15px; padding-block: 6px; }
+@media (prefers-reduced-motion: reduce) { .recdot::before { animation: none; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <span class="tag" id="tag">Video 01</span>
+    <span class="topic" id="topic"></span>
+    <span class="recdot" id="recdot" hidden>0:00</span>
+  </div>
+  <div class="stage" id="stage">
+    <div class="scroll" id="scroll"><p class="text" id="text"></p></div>
+  </div>
+  <div class="take" id="take" hidden></div>
+  <div class="bar">
+    <div class="row nav">
+      <button id="prev" aria-label="Video anterior">‹</button>
+      <button id="list">Lista</button>
+      <button id="next" aria-label="Video siguiente">›</button>
+    </div>
+    <button class="rec" id="rec">● Grabar voz</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-in">
+    <h2>Ajustes</h2>
+    <div class="row">
+      <button id="small" aria-label="Letra más chica">A−</button>
+      <button id="big" aria-label="Letra más grande">A+</button>
+      <button id="mir">Espejo</button>
+    </div>
+    <div class="row">
+      <button id="play" aria-label="Rodar texto">▶ Rodar</button>
+      <button id="slow" aria-label="Más lento">−</button>
+      <span class="speed" id="spd">x1.0</span>
+      <button id="fast" aria-label="Más rápido">+</button>
+    </div>
+    <h2>Elige el video</h2>
+    <div id="picks" style="display:grid;gap:8px"></div>
+    <button id="close">Cerrar</button>
+    <p class="tip">Pon este celular justo debajo del que graba, pegado al lente. Toca <b>Grabar voz</b>, da una palmada (sirve para juntar audio y video en Clipchamp), di la frase y toca <b>Parar</b>. Luego <b>Guardar MP3</b> o <b>Enviar</b> por WhatsApp o Drive. Las tomas viven solo mientras esta página está abierta: guárdalas antes de cerrarla.</p>
+    <p class="tip" style="font-size:12px">Audio MP3 con LAME (lame.sourceforge.net), licencia LGPL.</p>
+  </div>
+</div>
+
+<script src="vendor/lame.min.js"></script>
+<script>
+const N = "Hola, soy Brayan Shamer, de soporte de Lima Softwares.";
+const V = [
+  ["Presentación", "Hola, soy Brayan Shamer, del equipo de soporte de Lima Softwares. En esta serie te acompaño paso a paso para que aprendas a usar Lima Gestor en tu tienda.", "Empecemos."],
+  ["Instalar y registrar", "En este video te ayudo a instalar Lima Gestor y registrar tu tienda."],
+  ["Configurar la tienda", "Ahora vamos a configurar tu tienda: nombre, logo y datos para tus comprobantes."],
+  ["Cargar productos", "Hoy aprendes a cargar tus productos: con lector, con la cámara o desde un Excel."],
+  ["Stock y ajustes", "En este video ves cómo revisar tu stock y corregirlo cuando algo no cuadra."],
+  ["Compras de mercadería", "Te enseño a registrar la mercadería que te llega del proveedor."],
+  ["Primera venta", "Llegó el momento: vamos a hacer tu primera venta juntos."],
+  ["Venta por kilo", "Aquí aprendes a vender por kilo y a armar tu lista de compras."],
+  ["Caja", "Te muestro cómo abrir, controlar y cerrar tu caja del día."],
+  ["Fiado", "En este video aprendes a fiar, cobrar y llevar el control de lo que te deben."],
+  ["Clientes", "Te enseño a registrar a tus clientes y ver su historial."],
+  ["Cotizaciones", "Aquí aprendes a hacer cotizaciones y enviarlas por WhatsApp."],
+  ["Devoluciones y garantías", "Te muestro cómo buscar una venta, hacer una devolución o atender una garantía."],
+  ["Panel", "Ahora te explico el panel, para que veas de un vistazo cómo va tu tienda."],
+  ["Dueño, gerente y cajero", "Te enseño a crear usuarios para tu equipo y darle a cada uno su acceso."],
+  ["Varias computadoras y celular", "Aquí aprendes a conectar otra computadora o tu celular como caja."],
+  ["El celular del dueño", "Te muestro cómo ver tu tienda desde tu celular, estés donde estés."],
+  ["Copias de seguridad", "En este video aprendes a proteger tus datos con copias de seguridad."],
+  ["Bot de WhatsApp", "Te explico cómo funciona el bot de WhatsApp y cómo activarlo."],
+  ["Licencia y meses gratis", "Por último, te enseño a pagar tu licencia y a ganar meses gratis recomendando."],
+];
+const $ = (id) => document.getElementById(id);
+const store = { get(k, d) { try { const v = localStorage.getItem("tp_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem("tp_" + k, JSON.stringify(v)); } catch { /* sin almacenamiento */ } } };
+let i = store.get("i", 0), fs = store.get("fs", innerWidth < 500 ? 38 : 50), sp = store.get("sp", 1), mir = store.get("mir", false);
+let playing = false, raf = 0, last = 0, acc = 0;
+const pad = (n) => String(n).padStart(2, "0");
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const slug = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+const fileName = (k) => `${pad(k + 1)}_${slug(V[k][0])}.mp3`;
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+// ---------------------------------------------------------------- texto
+function render() {
+  const [topic, body, end] = V[i];
+  $("tag").textContent = "Video " + pad(i + 1) + " / " + V.length;
+  $("topic").textContent = topic;
+  const intro = i === 0 ? "" : esc(N) + " ";
+  $("text").innerHTML = `<span class="dir">Di “${i + 1}”, da una palmada y empieza.</span>`
+    + intro + esc(body) + ` <span class="say">${esc(end || "Vamos paso a paso.")}</span>`
+    + `<span class="dir">(sonríe, 2 segundos quieto y corta)</span>`;
+  $("scroll").scrollTop = 0; acc = 0;
+  document.documentElement.style.setProperty("--fs", fs + "px");
+  $("app").classList.toggle("mirror", mir); $("mir").classList.toggle("on", mir);
+  $("spd").textContent = "x" + sp.toFixed(1);
+  store.set("i", i); store.set("fs", fs); store.set("sp", sp); store.set("mir", mir);
+  drawTake();
+}
+function go(d) { if (recording) return; i = (i + d + V.length) % V.length; stop(); render(); }
+function tick(t) {
+  if (!playing) return;
+  const dt = last ? (t - last) / 1000 : 0; last = t;
+  acc += dt * 38 * sp;
+  const el = $("scroll"), whole = Math.floor(acc);
+  if (whole) { el.scrollTop += whole; acc -= whole; }
+  if (el.scrollTop + el.clientHeight >= el.scrollHeight - 2) return stop();
+  raf = requestAnimationFrame(tick);
+}
+function play() { playing = true; last = 0; $("play").textContent = "❚❚ Pausa"; $("sheet").hidden = true; raf = requestAnimationFrame(tick); }
+function stop() { playing = false; cancelAnimationFrame(raf); $("play").textContent = "▶ Rodar"; }
+
+// ---------------------------------------------------------------- voz
+const takes = {};           // takes[k] = { blob, url, secs }
+let stream = null, recorder = null, chunks = [], recording = false, recStart = 0, recTimer = 0, busy = false;
+
+async function getMic() {
+  if (stream && stream.active) return stream;
+  stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } });
+  return stream;
+}
+async function startRec() {
+  if (busy) return;
+  try { await getMic(); }
+  catch { return showMsg("No se pudo usar el micrófono. Permite el micrófono para esta página en el navegador y vuelve a intentar."); }
+  chunks = [];
+  try { recorder = new MediaRecorder(stream); } catch { return showMsg("Este navegador no puede grabar audio. Usa Chrome o Safari actualizados."); }
+  recorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = finishRec;
+  recorder.start();
+  recording = true; recStart = Date.now(); stop();
+  $("rec").textContent = "■ Parar"; $("recdot").hidden = false; $("take").hidden = true;
+  recTimer = setInterval(() => { $("recdot").textContent = mmss((Date.now() - recStart) / 1000); }, 250);
+}
+function stopRec() { if (recorder && recording) { recording = false; clearInterval(recTimer); recorder.stop(); } }
+async function finishRec() {
+  busy = true; $("recdot").hidden = true; $("rec").textContent = "Preparando MP3…";
+  const k = i;
+  try {
+    const raw = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+    const blob = await toMp3(raw);
+    if (takes[k]) URL.revokeObjectURL(takes[k].url);
+    takes[k] = { blob, url: URL.createObjectURL(blob), secs: (Date.now() - recStart) / 1000 };
+  } catch (e) { showMsg("No se pudo convertir a MP3 (" + (e && e.message || e) + "). Graba otra vez."); }
+  busy = false; $("rec").textContent = "● Grabar voz"; drawTake();
+}
+function decode(ctx, ab) {
+  return new Promise((res, rej) => { const p = ctx.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); });
+}
+async function toMp3(raw) {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new Ctx();
+  const buf = await decode(ctx, await raw.arrayBuffer());
+  ctx.close && ctx.close();
+  const n = buf.length, ch = buf.numberOfChannels, mono = new Float32Array(n);
+  for (let c = 0; c < ch; c++) { const d = buf.getChannelData(c); for (let s = 0; s < n; s++) mono[s] += d[s] / ch; }
+  const pcm = new Int16Array(n);
+  for (let s = 0; s < n; s++) { const v = Math.max(-1, Math.min(1, mono[s])); pcm[s] = v < 0 ? v * 0x8000 : v * 0x7FFF; }
+  const rate = [44100, 48000, 32000, 22050, 24000, 16000].includes(buf.sampleRate) ? buf.sampleRate : 44100;
+  const enc = new lamejs.Mp3Encoder(1, rate, 160), out = [];
+  for (let s = 0; s < n; s += 1152) { const b = enc.encodeBuffer(pcm.subarray(s, s + 1152)); if (b.length) out.push(new Uint8Array(b)); }
+  const end = enc.flush(); if (end.length) out.push(new Uint8Array(end));
+  return new Blob(out, { type: "audio/mpeg" });
+}
+function drawTake() {
+  const t = takes[i], box = $("take");
+  if (!t || recording) { box.hidden = true; return; }
+  box.hidden = false;
+  box.innerHTML = `<div class="info">Toma lista · ${mmss(t.secs)}<small>${esc(fileName(i))}</small></div>
+    <button id="hear">▶ Escuchar</button>
+    <a class="btn" id="save" href="${t.url}" download="${esc(fileName(i))}">Guardar MP3</a>
+    ${canShare(t) ? `<button id="send">Enviar</button>` : ""}`;
+  const audio = new Audio(t.url);
+  $("hear").onclick = () => { if (audio.paused) { audio.currentTime = 0; audio.play(); $("hear").textContent = "■ Parar"; } else { audio.pause(); $("hear").textContent = "▶ Escuchar"; } };
+  audio.onended = () => { const h = $("hear"); if (h) h.textContent = "▶ Escuchar"; };
+  const s = $("send");
+  if (s) s.onclick = async () => {
+    try { await navigator.share({ files: [new File([t.blob], fileName(i), { type: "audio/mpeg" })], title: fileName(i) }); }
+    catch { /* el usuario canceló */ }
+  };
+}
+function canShare(t) {
+  try { return !!(navigator.canShare && navigator.canShare({ files: [new File([t.blob], "x.mp3", { type: "audio/mpeg" })] })); } catch { return false; }
+}
+function showMsg(m) {
+  const box = $("take"); box.hidden = false; box.innerHTML = `<div class="msg">${esc(m)}</div>`;
+}
+
+// ---------------------------------------------------------------- controles
+$("prev").onclick = () => go(-1);
+$("next").onclick = () => go(1);
+$("stage").onclick = () => { if (!recording) go(1); };
+$("rec").onclick = () => (recording ? stopRec() : startRec());
+$("play").onclick = () => (playing ? stop() : play());
+$("slow").onclick = () => { sp = Math.max(0.3, +(sp - 0.2).toFixed(1)); render(); };
+$("fast").onclick = () => { sp = Math.min(3, +(sp + 0.2).toFixed(1)); render(); };
+$("small").onclick = () => { fs = Math.max(24, fs - 4); render(); };
+$("big").onclick = () => { fs = Math.min(96, fs + 4); render(); };
+$("mir").onclick = () => { mir = !mir; render(); };
+$("list").onclick = () => {
+  stop();
+  if (recording) return;
+  $("picks").innerHTML = V.map((v, k) => `<button class="pick ${k === i ? "cur" : ""}" data-k="${k}"><b>${pad(k + 1)}</b><span>${esc(v[0])}</span><em>${takes[k] ? "✓" : ""}</em></button>`).join("");
+  $("picks").querySelectorAll("[data-k]").forEach((b) => b.onclick = () => { i = +b.dataset.k; $("sheet").hidden = true; stop(); render(); });
+  $("sheet").hidden = false;
+};
+$("close").onclick = () => { $("sheet").hidden = true; };
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") go(1); else if (e.key === "ArrowLeft") go(-1);
+  else if (e.key === " ") { e.preventDefault(); playing ? stop() : play(); }
+});
+window.addEventListener("beforeunload", (e) => { if (Object.keys(takes).length) { e.preventDefault(); e.returnValue = ""; } });
+
+// pantalla siempre encendida mientras graban
+async function keepAwake() { try { await navigator.wakeLock?.request("screen"); } catch { /* no disponible */ } }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") keepAwake(); });
+document.addEventListener("click", keepAwake, { once: true });
+keepAwake();
+render();
+</script>
+</body>
+</html>
