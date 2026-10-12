@@ -9,6 +9,9 @@
 <meta name="theme-color" content="#1F4D35">
 <link rel="icon" href="icono.png">
 <style>
+  [hidden] { display:none !important; }
+  #direct { margin-top:14px; }
+  #direct a { color:#fff; text-decoration:underline; text-underline-offset:3px; }
   @font-face { font-family:"Bricolage Grotesque"; font-weight:600; font-display:swap; src:url(fonts/bricolage-grotesque-latin-600-normal.woff2) format("woff2"); }
   @font-face { font-family:"Bricolage Grotesque"; font-weight:700; font-display:swap; src:url(fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2"); }
   @font-face { font-family:"Bricolage Grotesque"; font-weight:800; font-display:swap; src:url(fonts/bricolage-grotesque-latin-800-normal.woff2) format("woff2"); }
@@ -328,12 +331,14 @@
     <div>
       <h2 data-t="d_t"></h2>
       <p class="sub" data-t="d_p"></p>
-      <ol><li data-t="d_1"></li><li data-t="d_2"></li><li data-t="d_3"></li></ol>
+      <ol><li id="d1" data-t="d_1"></li><li id="d2" data-t="d_2"></li><li data-t="d_3"></li></ol>
     </div>
     <div class="center">
+      <a class="btn p" id="storebtn" target="_blank" rel="noopener" hidden><span data-t="d_store"></span></a>
       <a class="btn p" id="dlbtn"><span data-t="d_btn"></span></a>
       <div class="ver" id="ver"></div>
       <div class="ver" data-t="d_req"></div>
+      <div class="ver" id="direct" hidden><a href="#descargar" id="dllink" data-t="d_direct"></a><br><span data-t="d_direct_n"></span></div>
     </div>
   </div>
 </div></section>
@@ -449,6 +454,12 @@ const T = {
   d_prog: ["Descargando… {p}%", "Baixando… {p}%", "Downloading… {p}%"], d_ok: ["¡Listo! Abre el archivo descargado.", "Pronto! Abra o arquivo baixado.", "Done! Open the downloaded file."],
   d_err: ["No se pudo descargar. Revisa tu internet e intenta de nuevo, o escríbenos por WhatsApp.", "Não foi possível baixar. Verifique sua internet e tente de novo, ou fale conosco no WhatsApp.", "Download failed. Check your connection and try again, or message us on WhatsApp."], d_soon: ["Próximamente", "Em breve", "Coming soon"],
   d_ver: ["Versión {v} · {s} MB", "Versão {v} · {s} MB", "Version {v} · {s} MB"],
+  d_store: ["Instalar desde Microsoft Store", "Instalar pela Microsoft Store", "Get it from Microsoft Store"],
+  d_1s: ["Toca «Instalar desde Microsoft Store» y luego «Obtener». Es gratis.", "Toque em «Instalar pela Microsoft Store» e depois em «Obter». É grátis.", "Tap «Get it from Microsoft Store», then «Get». It's free."],
+  d_2s: ["Se instala sin advertencias de Windows y se actualiza solo.", "Instala sem avisos do Windows e se atualiza sozinho.", "Installs with no Windows warnings and updates by itself."],
+  d_vers: ["Versión {v} · Microsoft Store", "Versão {v} · Microsoft Store", "Version {v} · Microsoft Store"],
+  d_direct: ["¿Tu PC no tiene Microsoft Store? Descarga directa", "Seu PC não tem Microsoft Store? Download direto", "No Microsoft Store on your PC? Direct download"],
+  d_direct_n: ["Windows puede mostrar un aviso: «Más información» → «Ejecutar de todas formas».", "O Windows pode mostrar um aviso: «Mais informações» → «Executar assim mesmo».", "Windows may show a warning: «More info» → «Run anyway»."],
   d_req: ["Windows 10 u 11 · 4 GB de RAM o más", "Windows 10 ou 11 · 4 GB de RAM ou mais", "Windows 10 or 11 · 4 GB RAM or more"],
   q_t: ["Preguntas frecuentes", "Perguntas frequentes", "Frequently asked questions"],
   faq: [
@@ -539,7 +550,14 @@ function render() {
   document.getElementById("plans").innerHTML = plan("p_m", 1, P.m) + plan("p_s", 6, P.s) + plan("p_a", 12, P.a, true);
   document.getElementById("botprice").textContent = tx("p_bot_price").replace("{m}", fmt(P.bot[0])).replace("{s}", fmt(P.bot[1])).replace("{a}", fmt(P.bot[2]));
   const btn = document.getElementById("dlbtn"), ver = document.getElementById("ver");
-  if (VER && VER.parts && VER.parts.length) {
+  const sb = document.getElementById("storebtn"), store = VER && VER.store_url;
+  // Con la app en Microsoft Store: se instala desde ahí (firmada por Microsoft, sin avisos de Windows)
+  sb.hidden = !store; btn.hidden = !!store; document.getElementById("direct").hidden = !store || !(VER.parts && VER.parts.length);
+  if (store) sb.href = store;
+  document.getElementById("d1").textContent = tx(store ? "d_1s" : "d_1");
+  document.getElementById("d2").textContent = tx(store ? "d_2s" : "d_2");
+  if (store) ver.textContent = tx("d_vers").replace("{v}", VER.version);
+  else if (VER && VER.parts && VER.parts.length) {
     btn.href = "#descargar"; btn.classList.remove("off"); btn.removeAttribute("aria-disabled");
     ver.textContent = tx("d_ver").replace("{v}", VER.version).replace("{s}", VER.size_mb || "≈30");
   } else {
@@ -561,7 +579,7 @@ document.getElementById("y").textContent = new Date().getFullYear();
 render();
 // Descarga: el instalador está en pedazos de 20 MB (límite de Cloudflare Pages); aquí se juntan en un solo .exe
 let busy = false;
-document.getElementById("dlbtn").addEventListener("click", async (e) => {
+const directDl = async (e) => {
   e.preventDefault();
   if (busy || !VER || !VER.parts || !VER.parts.length) return;
   busy = true;
@@ -593,7 +611,9 @@ document.getElementById("dlbtn").addEventListener("click", async (e) => {
     ver.textContent = tx("d_err");
   }
   busy = false;
-});
+};
+document.getElementById("dlbtn").addEventListener("click", directDl);
+document.getElementById("dllink").addEventListener("click", directDl);
 // versión publicada: la escribe construir_instalador.bat en version.json
 fetch("version.json?" + Date.now()).then((r) => (r.ok ? r.json() : null)).then((v) => { if (v) { VER = v; render(); } }).catch(() => {});
 </script>
