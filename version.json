@@ -1,14 +1,14 @@
 {
-  "version": "0.6.6",
+  "version": "0.6.7",
   "date": "2026-10-11",
   "size_mb": 42,
-  "bytes": 43868543,
-  "sha256": "7b62f93b30d023f4b62290c0af1ce5dbb8897fb2ab0fa1158a4e642b4f09be26",
-  "file": "LimaGestor_Instalador_0.6.6.exe",
+  "bytes": 43869883,
+  "sha256": "55fc6c1e66c3da6155573eb009db7ec5bc4e60cd2b88272cdc10664909ada22c",
+  "file": "LimaGestor_Instalador_0.6.7.exe",
   "parts": [
-    "descarga/LimaGestor_0.6.6.part1",
-    "descarga/LimaGestor_0.6.6.part2",
-    "descarga/LimaGestor_0.6.6.part3"
+    "descarga/LimaGestor_0.6.7.part1",
+    "descarga/LimaGestor_0.6.7.part2",
+    "descarga/LimaGestor_0.6.7.part3"
   ],
   "url": "https://limasoftwares.com/#descargar"
 }
