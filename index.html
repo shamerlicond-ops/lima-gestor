@@ -147,6 +147,8 @@
   .plan.best { border:2px solid var(--forest); }
   .plan .badge { position:absolute; top:-13px; left:24px; background:var(--lime); color:var(--night); font-size:13px; font-weight:800; border-radius:999px; padding:4px 11px; }
   .plan h4 { margin:0 0 8px; font:700 18px var(--display); color:var(--forest); }
+  .plan .was { display:block; font:600 16px var(--display); color:var(--muted, #6b7a70); text-decoration:line-through; margin-bottom:2px; }
+  .promo { display:table; margin:-6px auto 22px; background:var(--lime); color:var(--night); font-weight:800; border-radius:999px; padding:8px 18px; }
   .price { font:800 42px/1 var(--display); color:var(--ink); letter-spacing:-.03em; }
   .per { color:var(--muted); font-size:15px; margin-top:6px; }
   .save { color:var(--leaf); font-weight:700; font-size:14.5px; min-height:24px; margin-top:2px; }
@@ -320,6 +322,7 @@
 <section class="plans-bg" id="planes"><div class="wrap center">
   <h2 data-t="p_t"></h2><p class="sub" data-t="p_sub"></p>
   <div class="ctry"><button data-c="PE">🇵🇪 Perú</button><button data-c="BR">🇧🇷 Brasil</button></div>
+  <div class="promo" id="promo" hidden></div>
   <div class="plans" id="plans"></div>
   <div class="addon"><div style="flex:1;min-width:240px"><b data-t="p_bot_t"></b><br><span id="botprice"></span></div>
     <a class="btn s sm" href="#bot" data-t="p_bot_more"></a></div>
@@ -440,6 +443,7 @@ const T = {
   p_eb: ["Planes", "Planos", "Pricing"], p_t: ["Un precio claro, sin sorpresas", "Um preço claro, sem surpresas", "Clear pricing, no surprises"],
   p_sub: ["Todas las funciones en todos los planes. Prueba 15 días gratis y paga recién si te sirve.", "Todas as funções em todos os planos. Teste 15 dias grátis e pague só se servir.", "Every feature on every plan. Try 15 days free and pay only if it works for you."],
   p_m: ["Mensual", "Mensal", "Monthly"], p_s: ["Semestral", "Semestral", "6 months"], p_a: ["Anual", "Anual", "Yearly"],
+  promo_t: ["{l}: {p}% de descuento hasta el {d}", "{l}: {p}% de desconto até {d}", "{l}: {p}% off until {d}"], promo_l: ["Precio de lanzamiento", "Preço de lançamento", "Launch price"],
   p_per_m: ["por mes", "por mês", "per month"], p_eq: ["equivale a {v} al mes", "equivale a {v} por mês", "equals {v} a month"], p_save: ["Ahorras {v}", "Você economiza {v}", "You save {v}"], p_best: ["Más conveniente", "Mais vantajoso", "Best value"],
   p_inc: ["Todas las funciones · 1 tienda y 1 computadora · Soporte por WhatsApp · Actualizaciones", "Todas as funções · 1 loja e 1 computador · Suporte pelo WhatsApp · Atualizações", "All features · 1 store and 1 computer · WhatsApp support · Updates"],
   p_bot_t: ["Bot de WhatsApp con Lima IA Pro (opcional)", "Robô de WhatsApp com Lima IA Pro (opcional)", "WhatsApp bot with Lima AI Pro (optional)"], p_bot_more: ["Ver cómo funciona", "Ver como funciona", "See how it works"],
@@ -469,9 +473,9 @@ const T = {
     [["¿Gano algo si recomiendo Lima Gestor?", "Sí: 1 mes gratis por cada tienda nueva que pague su primera licencia con tu código. Tu código está en Configuración → Licencia → Recomienda y gana, con un botón para enviarlo por WhatsApp. El mes se suma solo a tu licencia."],
      ["Ganho algo se indicar o Lima Gestor?", "Sim: 1 mês grátis para cada loja nova que pagar a primeira licença com o seu código. Seu código fica em Configurações → Licença → Indique e ganhe, com um botão para enviar pelo WhatsApp. O mês é somado sozinho à sua licença."],
      ["Do I get anything for referring Lima Gestor?", "Yes: 1 free month for every new store that pays its first license with your code. Your code is in Settings → License → Refer and earn, with a button to send it on WhatsApp. The month is added to your license automatically."]],
-    [["¿Cómo funciona la prueba gratis?", "Instalas y usas todas las funciones por 15 días, sin tarjeta. Si te sirve, eliges un plan y pagas por Yape/Plin o PIX; la licencia se activa sola. Si no, no pagas nada."],
-     ["Como funciona o teste grátis?", "Você instala e usa todas as funções por 15 dias, sem cartão. Se servir, escolhe um plano e paga por PIX; a licença ativa sozinha. Se não, não paga nada."],
-     ["How does the free trial work?", "Install and use every feature for 15 days, no card needed. If it works for you, pick a plan and pay by Yape/Plin or PIX; the license activates by itself. If not, you pay nothing."]],
+    [["¿Cómo funciona la prueba gratis?", "Instalas y usas todas las funciones por 15 días, también el bot de WhatsApp, sin tarjeta. Si te sirve, eliges un plan y pagas por Yape/Plin o PIX; la licencia se activa sola. Si no, no pagas nada."],
+     ["Como funciona o teste grátis?", "Você instala e usa todas as funções por 15 dias, também o robô de WhatsApp, sem cartão. Se servir, escolhe um plano e paga por PIX; a licença ativa sozinha. Se não, não paga nada."],
+     ["How does the free trial work?", "Install and use every feature for 15 days, the WhatsApp bot included, no card needed. If it works for you, pick a plan and pay by Yape/Plin or PIX; the license activates by itself. If not, you pay nothing."]],
     [["¿Mis datos están seguros?", "Tu información se guarda solo en tu computadora, con copia de seguridad automática cada día. Lima Softwares no tiene acceso a tus ventas ni a tus clientes."],
      ["Meus dados estão seguros?", "Suas informações ficam só no seu computador, com cópia de segurança automática todos os dias. A Lima Softwares não tem acesso às suas vendas nem aos seus clientes."],
      ["Is my data safe?", "Your information is stored only on your computer, with an automatic daily backup. Lima Softwares has no access to your sales or customers."]],
@@ -511,7 +515,11 @@ const PRICES = {  // igual que en Lima Gestor (licencia.py)
 const REF = (new URLSearchParams(location.search).get("ref") || "").toUpperCase().replace(/[^A-HJ-NP-Z2-9]/g, "").slice(0, 6);
 T.ref_box = ["🎁 Te recomendó una tienda que ya usa Lima Gestor. Cuando pagues tu licencia, escribe su código <b>{c}</b> en «Código de quien te recomendó».", "🎁 Uma loja que já usa o Lima Gestor te indicou. Quando pagar a licença, coloque o código <b>{c}</b> em «Código de quem indicou».", "🎁 A store that already uses Lima Gestor referred you. When you pay for your license, enter code <b>{c}</b> under «Referral code»."];
 const LI = { es: 0, pt: 1, en: 2 };
-let L = "es", C = "PE", VER = null, userC = false;
+let L = "es", C = "PE", VER = null, userC = false, PROMO = null;
+const API = "https://lima-api.shamer-licond.workers.dev";
+// descuento que Lima Softwares define en LimaAdmin (mismo redondeo que el programa: a la unidad)
+const promoFor = (on) => (PROMO && on && (PROMO.country || "ALL") !== (C === "PE" ? "BR" : "PE") ? PROMO.pct : 0);
+const disc = (v, pct) => (pct ? Math.floor((v * 100 * (100 - pct) + 5000) / 10000) : v);
 // Curso en orden (00, 01, 02…): pega aquí el ID de la lista «Curso Lima Gestor (español)»
 // (lo que va después de "list=" en su enlace). Mientras esté vacío se usan los videos del canal (salen del más nuevo al más antiguo).
 const YT_COURSE = "PLBAmHKLbP9FM";
@@ -538,17 +546,26 @@ function render() {
   document.getElementById("faq").innerHTML = T.faq.map((q) => { const [a, b] = q[LI[L]]; return `<details><summary>${a}</summary><p>${b}</p></details>`; }).join("");
   document.querySelectorAll("[data-c]").forEach((b) => b.classList.toggle("on", b.dataset.c === C));
   const P = PRICES[C];
-  const plan = (k, months, price, best) => {
-    const save = P.m * months - price;
+  const pl = promoFor(PROMO && PROMO.lic !== false), pb = promoFor(PROMO && PROMO.bot !== false);
+  const pe = document.getElementById("promo");
+  pe.hidden = !(pl || pb);
+  if (pl || pb) {
+    const [y, mo, d] = PROMO.until.split("-").map(Number);
+    pe.textContent = "🏷️ " + tx("promo_t").replace("{l}", PROMO.label || tx("promo_l")).replace("{p}", PROMO.pct)
+      .replace("{d}", new Date(y, mo - 1, d).toLocaleDateString(L === "en" ? "en" : L === "pt" ? "pt-BR" : "es-PE", { day: "numeric", month: "long" }));
+  }
+  const plan = (k, months, full, best) => {
+    const price = disc(full, pl);
+    const save = disc(P.m, pl) * months - price;
     return `<div class="plan ${best ? "best" : ""}">${best ? `<span class="badge">${tx("p_best")}</span>` : ""}
-      <h4>${tx(k)}</h4><div class="price">${fmt(price)}</div>
+      <h4>${tx(k)}</h4>${price !== full ? `<span class="was">${fmt(full)}</span>` : ""}<div class="price">${fmt(price)}</div>
       <div class="per">${months === 1 ? tx("p_per_m") : tx("p_eq").replace("{v}", fmt(Math.round(price / months * 100) / 100))}</div>
       <div class="save">${save > 0 ? tx("p_save").replace("{v}", fmt(save)) : ""}</div>
       <p class="note" style="margin-top:10px">${tx("p_inc")}</p>
       <a class="btn ${best ? "p" : "s"}" style="width:100%;margin-top:6px" href="#descargar">${tx("cta_try")}</a></div>`;
   };
   document.getElementById("plans").innerHTML = plan("p_m", 1, P.m) + plan("p_s", 6, P.s) + plan("p_a", 12, P.a, true);
-  document.getElementById("botprice").textContent = tx("p_bot_price").replace("{m}", fmt(P.bot[0])).replace("{s}", fmt(P.bot[1])).replace("{a}", fmt(P.bot[2]));
+  document.getElementById("botprice").textContent = tx("p_bot_price").replace("{m}", fmt(disc(P.bot[0], pb))).replace("{s}", fmt(disc(P.bot[1], pb))).replace("{a}", fmt(disc(P.bot[2], pb)));
   const btn = document.getElementById("dlbtn"), ver = document.getElementById("ver");
   const sb = document.getElementById("storebtn"), store = VER && VER.store_url;
   // Con la app en Microsoft Store: se instala desde ahí (firmada por Microsoft, sin avisos de Windows)
@@ -615,6 +632,7 @@ const directDl = async (e) => {
 document.getElementById("dlbtn").addEventListener("click", directDl);
 document.getElementById("dllink").addEventListener("click", directDl);
 // versión publicada: la escribe construir_instalador.bat en version.json
+fetch(API + "/v1/promo").then((r) => (r.ok ? r.json() : null)).then((d) => { if (d && d.promo && d.promo.pct) { PROMO = d.promo; render(); } }).catch(() => {});
 fetch("version.json?" + Date.now()).then((r) => (r.ok ? r.json() : null)).then((v) => { if (v) { VER = v; render(); } }).catch(() => {});
 </script>
 </body>
