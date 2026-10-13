@@ -412,7 +412,7 @@ const T = {
   k_1: ["Cierre en PDF por medio de pago", "Fechamento em PDF por forma de pagamento", "Closing report in PDF by payment method"],
   k_2: ["Usuarios con permisos: dueño, gerente y cajero", "Usuários com permissões: dono, gerente e caixa", "Users with permissions: owner, manager and cashier"],
   k_3: ["Registro de actividad: quién vendió, anuló o cambió precios", "Registro de atividade: quem vendeu, cancelou ou mudou preços", "Activity log: who sold, voided or changed prices"],
-  b_eb: ["Ventas por WhatsApp", "Vendas pelo WhatsApp", "Sales on WhatsApp"], b_t: ["Un bot que atiende a tus clientes", "Um robô que atende seus clientes", "A bot that serves your customers"], b_tag: ["Adicional", "Adicional", "Add-on"],
+  b_eb: ["Ventas por WhatsApp", "Vendas pelo WhatsApp", "Sales on WhatsApp"], b_t: ["Un bot que atiende a tus clientes", "Um robô que atende seus clientes", "A bot that serves your customers"], b_tag: ["En pruebas", "Em testes", "In testing"],
   b_p: ["Funciona con el WhatsApp Business oficial de tu tienda. El cliente arma su pedido con tu catálogo y stock real, y tu cajero solo cobra.", "Funciona com o WhatsApp Business oficial da sua loja. O cliente monta o pedido com seu catálogo e estoque real, e o caixa só cobra.", "Works with your store's official WhatsApp Business. Customers build their order from your real catalog and stock; your cashier just charges."],
   b_1: ["Catálogo con fotos y carrito dentro de WhatsApp; solo muestra lo que tiene stock", "Catálogo com fotos e carrinho dentro do WhatsApp; só mostra o que tem estoque", "Catalog with photos and cart inside WhatsApp; only shows what's in stock"],
   b_2: ["Entiende español, portugués e inglés, con jerga y errores de tipeo (Lima IA Pro)", "Entende português, espanhol e inglês, com gírias e erros de digitação (Lima IA Pro)", "Understands Spanish, Portuguese and English, slang and typos included (Lima AI Pro)"],
@@ -447,6 +447,7 @@ const T = {
   p_per_m: ["por mes", "por mês", "per month"], p_eq: ["equivale a {v} al mes", "equivale a {v} por mês", "equals {v} a month"], p_save: ["Ahorras {v}", "Você economiza {v}", "You save {v}"], p_best: ["Más conveniente", "Mais vantajoso", "Best value"],
   p_inc: ["Todas las funciones · 1 tienda y 1 computadora · Soporte por WhatsApp · Actualizaciones", "Todas as funções · 1 loja e 1 computador · Suporte pelo WhatsApp · Atualizações", "All features · 1 store and 1 computer · WhatsApp support · Updates"],
   p_bot_t: ["Bot de WhatsApp con Lima IA Pro (opcional)", "Robô de WhatsApp com Lima IA Pro (opcional)", "WhatsApp bot with Lima AI Pro (optional)"], p_bot_more: ["Ver cómo funciona", "Ver como funciona", "See how it works"],
+  p_bot_soon: ["En fase de pruebas · sale el próximo mes con promoción para quienes ya compraron Lima Gestor.", "Em fase de testes · sai no próximo mês com promoção para quem já comprou o Lima Gestor.", "In testing · launches next month with a promo for existing Lima Gestor customers."],
   p_bot_price: ["{m} al mes · {s} semestral · {a} anual", "{m} por mês · {s} semestral · {a} anual", "{m} a month · {s} for 6 months · {a} a year"],
   p_note: ["1 licencia = 1 tienda y 1 computadora. ¿Más computadoras en la misma tienda? Se agregan desde el programa y usan el mismo stock. ¿Otra tienda? Escríbenos por WhatsApp. Pagos por Yape/Plin (Perú) o PIX (Brasil).", "1 licença = 1 loja e 1 computador. Mais computadores na mesma loja? São adicionados pelo programa e usam o mesmo estoque. Outra loja? Fale conosco no WhatsApp. Pagamento por PIX (Brasil) ou Yape/Plin (Peru).", "1 license = 1 store and 1 computer. More computers in the same store? Add them from the program; they share the same stock. Another store? Message us on WhatsApp. Payment by Yape/Plin (Peru) or PIX (Brazil)."],
   d_eb: ["Descarga", "Download", "Download"], d_t: ["Descarga Lima Gestor y pruébalo 15 días gratis", "Baixe o Lima Gestor e teste 15 dias grátis", "Download Lima Gestor and try it free for 15 days"],
@@ -516,9 +517,10 @@ const REF = (new URLSearchParams(location.search).get("ref") || "").toUpperCase(
 T.ref_box = ["🎁 Te recomendó una tienda que ya usa Lima Gestor. Cuando pagues tu licencia, escribe su código <b>{c}</b> en «Código de quien te recomendó».", "🎁 Uma loja que já usa o Lima Gestor te indicou. Quando pagar a licença, coloque o código <b>{c}</b> em «Código de quem indicou».", "🎁 A store that already uses Lima Gestor referred you. When you pay for your license, enter code <b>{c}</b> under «Referral code»."];
 const LI = { es: 0, pt: 1, en: 2 };
 let L = "es", C = "PE", VER = null, userC = false, PROMO = null;
+const BOT_SALE = false;  // el bot de WhatsApp está en fase de pruebas: sale el próximo mes
 const API = "https://lima-api.shamer-licond.workers.dev";
 // descuento que Lima Softwares define en LimaAdmin (mismo redondeo que el programa: a la unidad)
-const promoFor = (on) => (PROMO && on && (PROMO.country || "ALL") !== (C === "PE" ? "BR" : "PE") ? PROMO.pct : 0);
+const promoFor = (plan) => (PROMO && (PROMO.country || "ALL") !== (C === "PE" ? "BR" : "PE") ? ((PROMO.plans || {})[plan] ?? (PROMO.plans ? 0 : PROMO.pct)) : 0);
 const disc = (v, pct) => (pct ? Math.floor((v * 100 * (100 - pct) + 5000) / 10000) : v);
 // Curso en orden (00, 01, 02…): pega aquí el ID de la lista «Curso Lima Gestor (español)»
 // (lo que va después de "list=" en su enlace). Mientras esté vacío se usan los videos del canal (salen del más nuevo al más antiguo).
@@ -546,17 +548,18 @@ function render() {
   document.getElementById("faq").innerHTML = T.faq.map((q) => { const [a, b] = q[LI[L]]; return `<details><summary>${a}</summary><p>${b}</p></details>`; }).join("");
   document.querySelectorAll("[data-c]").forEach((b) => b.classList.toggle("on", b.dataset.c === C));
   const P = PRICES[C];
-  const pl = promoFor(PROMO && PROMO.lic !== false), pb = promoFor(PROMO && PROMO.bot !== false);
+  const PP = { p_m: promoFor("monthly"), p_s: promoFor("semiannual"), p_a: promoFor("annual") };  // el descuento es por plan; el bot no lleva
+  const pmax = Math.max(PP.p_m, PP.p_s, PP.p_a);
   const pe = document.getElementById("promo");
-  pe.hidden = !(pl || pb);
-  if (pl || pb) {
+  pe.hidden = !pmax;
+  if (pmax) {
     const [y, mo, d] = PROMO.until.split("-").map(Number);
-    pe.textContent = "🏷️ " + tx("promo_t").replace("{l}", PROMO.label || tx("promo_l")).replace("{p}", PROMO.pct)
+    pe.textContent = "🏷️ " + tx("promo_t").replace("{l}", PROMO.label || tx("promo_l")).replace("{p}", [PP.p_m, PP.p_s, PP.p_a].every((v) => v === pmax) ? pmax : ({ es: "hasta ", pt: "até ", en: "up to " }[L]) + pmax)
       .replace("{d}", new Date(y, mo - 1, d).toLocaleDateString(L === "en" ? "en" : L === "pt" ? "pt-BR" : "es-PE", { day: "numeric", month: "long" }));
   }
   const plan = (k, months, full, best) => {
-    const price = disc(full, pl);
-    const save = disc(P.m, pl) * months - price;
+    const price = disc(full, PP[k]);
+    const save = disc(P.m, PP.p_m) * months - price;
     return `<div class="plan ${best ? "best" : ""}">${best ? `<span class="badge">${tx("p_best")}</span>` : ""}
       <h4>${tx(k)}</h4>${price !== full ? `<span class="was">${fmt(full)}</span>` : ""}<div class="price">${fmt(price)}</div>
       <div class="per">${months === 1 ? tx("p_per_m") : tx("p_eq").replace("{v}", fmt(Math.round(price / months * 100) / 100))}</div>
@@ -565,7 +568,8 @@ function render() {
       <a class="btn ${best ? "p" : "s"}" style="width:100%;margin-top:6px" href="#descargar">${tx("cta_try")}</a></div>`;
   };
   document.getElementById("plans").innerHTML = plan("p_m", 1, P.m) + plan("p_s", 6, P.s) + plan("p_a", 12, P.a, true);
-  document.getElementById("botprice").textContent = tx("p_bot_price").replace("{m}", fmt(disc(P.bot[0], pb))).replace("{s}", fmt(disc(P.bot[1], pb))).replace("{a}", fmt(disc(P.bot[2], pb)));
+  // Bot de WhatsApp: en pruebas, aún no se vende. Al salir: BOT_SALE = true y vuelven los precios.
+  document.getElementById("botprice").textContent = BOT_SALE ? tx("p_bot_price").replace("{m}", fmt(P.bot[0])).replace("{s}", fmt(P.bot[1])).replace("{a}", fmt(P.bot[2])) : tx("p_bot_soon");
   const btn = document.getElementById("dlbtn"), ver = document.getElementById("ver");
   const sb = document.getElementById("storebtn"), store = VER && VER.store_url;
   // Con la app en Microsoft Store: se instala desde ahí (firmada por Microsoft, sin avisos de Windows)
