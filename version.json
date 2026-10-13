@@ -2,8 +2,8 @@
   "version": "1.0.0",
   "date": "2026-10-13",
   "size_mb": 42,
-  "bytes": 44132958,
-  "sha256": "c74f4b8961d038713ebc79a711f1bf220c5b090f62e0f4d98298744a41a04461",
+  "bytes": 44136912,
+  "sha256": "25c45bb299d4fce88d1304b2aa58c8a16497c777403cd958715b72b1a2d4b1a3",
   "file": "LimaGestor_Instalador_1.0.0.exe",
   "parts": [
     "descarga/LimaGestor_1.0.0.part1",
