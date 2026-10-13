@@ -289,7 +289,6 @@
     <h2><span data-t="b_t"></span><span class="tag" data-t="b_tag"></span></h2>
     <p style="margin:16px 0 24px" data-t="b_p"></p>
     <ul class="ticks"><li data-t="b_1"></li><li data-t="b_2"></li><li data-t="b_3"></li><li data-t="b_4"></li><li data-t="b_5"></li><li data-t="b_6"></li></ul>
-    <p style="margin-top:22px"><a class="btn s" id="guialink" href="guia-whatsapp.html" data-t="b_guide"></a></p>
   </div>
   <div class="phone"><div class="screen">
     <div class="wa-top"><span class="av">🏪</span><span><span data-t="chat_store"></span><small data-t="chat_bus"></small></span></div>
@@ -447,7 +446,7 @@ const T = {
   p_per_m: ["por mes", "por mês", "per month"], p_eq: ["equivale a {v} al mes", "equivale a {v} por mês", "equals {v} a month"], p_save: ["Ahorras {v}", "Você economiza {v}", "You save {v}"], p_best: ["Más conveniente", "Mais vantajoso", "Best value"],
   p_inc: ["Todas las funciones · 1 tienda y 1 computadora · Soporte por WhatsApp · Actualizaciones", "Todas as funções · 1 loja e 1 computador · Suporte pelo WhatsApp · Atualizações", "All features · 1 store and 1 computer · WhatsApp support · Updates"],
   p_bot_t: ["Bot de WhatsApp con Lima IA Pro (opcional)", "Robô de WhatsApp com Lima IA Pro (opcional)", "WhatsApp bot with Lima AI Pro (optional)"], p_bot_more: ["Ver cómo funciona", "Ver como funciona", "See how it works"],
-  p_bot_soon: ["En fase de pruebas · sale el próximo mes con promoción para quienes ya compraron Lima Gestor.", "Em fase de testes · sai no próximo mês com promoção para quem já comprou o Lima Gestor.", "In testing · launches next month with a promo for existing Lima Gestor customers."],
+  p_bot_soon: ["En fase de pruebas · saldrá próximamente con promoción para quienes ya compraron Lima Gestor.", "Em fase de testes · sairá em breve com promoção para quem já comprou o Lima Gestor.", "In testing · launches soon with a promo for existing Lima Gestor customers."],
   p_bot_price: ["{m} al mes · {s} semestral · {a} anual", "{m} por mês · {s} semestral · {a} anual", "{m} a month · {s} for 6 months · {a} a year"],
   p_note: ["1 licencia = 1 tienda y 1 computadora. ¿Más computadoras en la misma tienda? Se agregan desde el programa y usan el mismo stock. ¿Otra tienda? Escríbenos por WhatsApp. Pagos por Yape/Plin (Perú) o PIX (Brasil).", "1 licença = 1 loja e 1 computador. Mais computadores na mesma loja? São adicionados pelo programa e usam o mesmo estoque. Outra loja? Fale conosco no WhatsApp. Pagamento por PIX (Brasil) ou Yape/Plin (Peru).", "1 license = 1 store and 1 computer. More computers in the same store? Add them from the program; they share the same stock. Another store? Message us on WhatsApp. Payment by Yape/Plin (Peru) or PIX (Brazil)."],
   d_eb: ["Descarga", "Download", "Download"], d_t: ["Descarga Lima Gestor y pruébalo 15 días gratis", "Baixe o Lima Gestor e teste 15 dias grátis", "Download Lima Gestor and try it free for 15 days"],
@@ -517,7 +516,7 @@ const REF = (new URLSearchParams(location.search).get("ref") || "").toUpperCase(
 T.ref_box = ["🎁 Te recomendó una tienda que ya usa Lima Gestor. Cuando pagues tu licencia, escribe su código <b>{c}</b> en «Código de quien te recomendó».", "🎁 Uma loja que já usa o Lima Gestor te indicou. Quando pagar a licença, coloque o código <b>{c}</b> em «Código de quem indicou».", "🎁 A store that already uses Lima Gestor referred you. When you pay for your license, enter code <b>{c}</b> under «Referral code»."];
 const LI = { es: 0, pt: 1, en: 2 };
 let L = "es", C = "PE", VER = null, userC = false, PROMO = null;
-const BOT_SALE = false;  // el bot de WhatsApp está en fase de pruebas: sale el próximo mes
+const BOT_SALE = false;  // el bot de WhatsApp está en fase de pruebas: sin fecha de salida todavía
 const API = "https://lima-api.shamer-licond.workers.dev";
 // descuento que Lima Softwares define en LimaAdmin (mismo redondeo que el programa: a la unidad)
 const promoFor = (plan) => (PROMO && (PROMO.country || "ALL") !== (C === "PE" ? "BR" : "PE") ? ((PROMO.plans || {})[plan] ?? (PROMO.plans ? 0 : PROMO.pct)) : 0);
@@ -536,7 +535,6 @@ const fmt = (v) => {
   return PRICES[C].cur + v.toLocaleString(loc, { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 });
 };
 function render() {
-  document.getElementById("guialink").href = "guia-whatsapp.html?l=" + L;
   document.documentElement.lang = L;
   document.querySelectorAll("[data-set]").forEach((b) => b.classList.toggle("on", b.dataset.set === L));
   document.querySelectorAll("[data-t]").forEach((el) => { const v = tx(el.dataset.t); if (el.hasAttribute("data-html")) el.innerHTML = v; else el.textContent = v; });
