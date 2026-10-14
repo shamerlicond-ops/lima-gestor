@@ -572,7 +572,12 @@ function render() {
   const sb = document.getElementById("storebtn"), store = VER && VER.store_url;
   // Con la app en Microsoft Store: se instala desde ahí (firmada por Microsoft, sin avisos de Windows)
   sb.hidden = !store; btn.hidden = !!store; document.getElementById("direct").hidden = !store || !(VER.parts && VER.parts.length);
-  if (store) sb.href = store;
+  if (store) {
+    sb.href = store;
+    // Protocolo ms-windows-store:// abre la app Store; target=_blank solo deja una pestaña vacía
+    if (/^ms-windows-store:/i.test(store)) sb.removeAttribute("target");
+    else sb.setAttribute("target", "_blank");
+  }
   document.getElementById("d1").textContent = tx(store ? "d_1s" : "d_1");
   document.getElementById("d2").textContent = tx(store ? "d_2s" : "d_2");
   if (store) ver.textContent = tx("d_vers").replace("{v}", VER.version);
