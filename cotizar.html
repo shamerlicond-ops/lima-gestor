@@ -26,7 +26,8 @@
   [hidden] { display:none !important; }
   .wrap { max-width:560px; margin:0 auto; }
   .top { display:flex; align-items:center; gap:8px; padding:14px 0 10px; font-size:13px; color:var(--muted); }
-  .lang { margin-left:auto; display:flex; gap:3px; }
+  .lang { margin-left:6px; display:flex; gap:3px; }
+  .vid { margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:8px; padding:3px 9px; font:700 12px var(--font); color:var(--leaf); cursor:pointer; }
   .lang button { border:1px solid var(--line); background:#fff; border-radius:8px; padding:3px 8px; font:700 12px var(--font); color:var(--muted); cursor:pointer; }
   .lang button.on { background:var(--leaf); border-color:var(--leaf); color:#fff; }
 
@@ -83,6 +84,8 @@
   .msg { border-radius:10px; padding:10px 12px; font-weight:600; font-size:14px; } .msg.bad { background:#F8E2DD; color:var(--red); }
   .foot { text-align:center; font-size:12px; color:var(--muted); margin:18px 0 0; }
   .foot a { color:var(--muted); }
+  .linkbtn { background:none; border:0; padding:0; color:var(--muted); text-decoration:underline; cursor:pointer; font:inherit; }
+  .nl { font-weight:500; color:var(--muted); font-size:12px; }
   @media (max-width:400px) { .price { width:126px; } .store { font-size:29px; } .slip::before { left:40px; } .row, .slip-head { padding-left:52px; } .qty { width:30px; } }
   @media (prefers-reduced-motion: no-preference) { .done-mark { animation:pop .35s ease-out; } @keyframes pop { from { transform:scale(.6); opacity:0; } } }
 </style>
@@ -90,6 +93,7 @@
 <body>
 <div class="wrap">
   <div class="top"><span data-t="by"></span>
+    <button type="button" class="vid" id="vid" data-t="video"></button>
     <div class="lang"><button data-l="es">ES</button><button data-l="pt">PT</button><button data-l="en">EN</button></div></div>
 
   <div id="loading" class="slip"><div class="state"><p data-t="loading"></p></div></div>
@@ -112,11 +116,11 @@
       <div class="chips" id="dchips"></div>
       <label class="f"><span data-t="terms"></span><input id="terms" maxlength="80"></label>
       <div class="chips" id="tchips"></div>
-      <label class="f"><span data-t="note2"></span><textarea id="note2" rows="2" maxlength="400"></textarea></label>
+      <label class="f"><span data-t="note2"></span><textarea id="note2" rows="2" maxlength="400"></textarea><span class="nl" data-t="nolinks"></span></label>
       <label class="f"><span data-t="who"></span><input id="who" maxlength="60" autocomplete="name"></label>
       <div class="msg bad" id="err" hidden></div>
     </section>
-    <p class="foot"><span data-t="foot"></span> <a href="https://limasoftwares.com" target="_blank" rel="noopener">limasoftwares.com</a> · <a href="https://limasoftwares.com/privacidad.html" target="_blank" rel="noopener" data-t="priv"></a></p>
+    <p class="foot"><span data-t="foot"></span> <a href="https://limasoftwares.com" target="_blank" rel="noopener">limasoftwares.com</a> · <a href="https://limasoftwares.com/privacidad.html" target="_blank" rel="noopener" data-t="priv"></a> · <button type="button" class="linkbtn" id="report" data-t="report"></button></p>
   </form>
 
   <div id="done" class="slip" hidden><div class="state">
@@ -133,6 +137,8 @@
 
 <script>
 const API = "https://lima-api.shamer-licond.workers.dev";
+// ▶ VIDEO GUÍA de esta página: pega aquí el enlace de YouTube de cada idioma (vacío = "Video próximamente").
+const VIDEOS = { es: "", pt: "", en: "" };
 const T = {
   by: ["Pedido de precios · Lima Gestor", "Pedido de cotação · Lima Gestor", "Price request · Lima Gestor"],
   loading: ["Cargando el pedido…", "Carregando o pedido…", "Loading the request…"],
@@ -160,15 +166,25 @@ const T = {
   done_t: ["¡Gracias!", "Obrigado!", "Thank you!"],
   donep: ["{s} ya puede ver tus precios. Si cambia algo, puedes corregirlos hasta el {d}.", "{s} já pode ver seus preços. Se algo mudar, pode corrigir até {d}.", "{s} can already see your prices. If anything changes, you can edit them until {d}."],
   edit: ["Corregir mis precios", "Corrigir meus preços", "Edit my prices"],
-  foot: ["Este pedido lo envía la tienda con Lima Gestor. Tus precios solo los ve esa tienda.", "Este pedido é enviado pela loja com o Lima Gestor. Seus preços só essa loja vê.", "The store sends this request with Lima Gestor. Only that store sees your prices."],
+  foot: ["Este pedido lo envía la tienda con Lima Gestor. Tus precios solo los ve esa tienda. Lima Softwares no revisa cada pedido: si ves algo indebido, repórtalo.", "Este pedido é enviado pela loja com o Lima Gestor. Seus preços só essa loja vê. A Lima Softwares não revisa cada pedido: se vir algo indevido, denuncie.", "The store sends this request with Lima Gestor. Only that store sees your prices. Lima Softwares doesn't review each request: if you see something improper, report it."],
   un: ["und.", "un.", "pcs"],
   priv: ["Privacidad", "Privacidade", "Privacy"],
+  video: ["▶ Cómo responder", "▶ Como responder", "▶ How to reply"],
+  video_soon: ["Video próximamente", "Vídeo em breve", "Video coming soon"],
+  nolinks: ["Sin enlaces: solo precios y condiciones.", "Sem links: só preços e condições.", "No links: prices and terms only."],
+  report: ["Reportar este pedido", "Denunciar este pedido", "Report this request"],
+  report_q: ["¿Este pedido es abusivo, ofensivo o ilegal? Lo pondremos en revisión.", "Este pedido é abusivo, ofensivo ou ilegal? Vamos colocá-lo em revisão.", "Is this request abusive, offensive or illegal? We'll put it under review."],
+  reported: ["Gracias. Pusimos este pedido en revisión.", "Obrigado. Colocamos este pedido em revisão.", "Thanks. We put this request under review."],
+  review_t: ["Este pedido está en revisión", "Este pedido está em revisão", "This request is under review"],
+  review: ["Alguien lo reportó. Por ahora no se pueden enviar precios.", "Alguém o denunciou. Por enquanto não é possível enviar preços.", "Someone reported it. Prices can't be sent for now."],
+  blocked: ["Ese texto no se puede enviar (no se permiten enlaces ni contenido ofensivo o ilegal). Quítalo e inténtalo de nuevo.", "Esse texto não pode ser enviado (não são permitidos links nem conteúdo ofensivo ou ilegal). Retire-o e tente de novo.", "That text can't be sent (links and offensive or illegal content aren't allowed). Remove it and try again."],
 };
 const I = { es: 0, pt: 1, en: 2 };
 const SYM = { PEN: "S/", BRL: "R$" };
 const tok = ((location.hash || "").slice(1) || new URLSearchParams(location.search).get("q") || "").trim();
 const m = tok.match(/^([a-f0-9]{16})\.([a-f0-9]{8})$/);
 let L = "es", D = null, sent = false;
+const savedLang = () => { try { const v = localStorage.getItem("lg_rfq_lang"); return v in I ? v : ""; } catch { return ""; } };
 const tx = (k, v = {}) => { let s = T[k][I[L]]; for (const [a, b] of Object.entries(v)) s = s.replaceAll(`{${a}}`, b); return s; };
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -237,7 +253,9 @@ function sum() {
 }
 
 document.addEventListener("click", (e) => {
-  const l = e.target.closest("[data-l]"); if (l) { L = l.dataset.l; paint(); return; }
+  const l = e.target.closest("[data-l]"); if (l) { L = l.dataset.l; try { localStorage.setItem("lg_rfq_lang", L); } catch { /* sin almacenamiento */ } paint(); return; }
+  if (e.target.closest("#vid")) { const u = VIDEOS[L] || VIDEOS.es || VIDEOS.pt || VIDEOS.en; if (u) window.open(u, "_blank", "noopener"); else alert(tx("video_soon")); return; }
+  if (e.target.closest("#report")) { reportIt(); return; }
   const nb = e.target.closest("[data-none],[data-less]");
   if (nb) {
     const on = nb.getAttribute("aria-pressed") !== "true"; nb.setAttribute("aria-pressed", on);
@@ -260,14 +278,29 @@ $("#form").addEventListener("submit", async (e) => {
   try {
     const r = await fetch(`${API}/v1/rfq/q/${m[1]}.${m[2]}`, { method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ offers, days: $("#days").value, terms: $("#terms").value, note: $("#note2").value, who: $("#who").value }) });
+    if (r.status === 422) { err.hidden = false; err.textContent = tx("blocked"); throw new Error("blocked"); }
     if (r.status === 409) { D.open = false; paint(); rows(); throw new Error("closed"); }
     if (!r.ok) throw new Error("http");
     sent = true;
     try { localStorage.setItem("lg_rfq_who", $("#who").value); } catch { /* sin almacenamiento */ }
     $("#form").hidden = true; $("#bar").hidden = true; $("#done").hidden = false; paint(); window.scrollTo(0, 0);
-  } catch (ex) { if (ex.message !== "closed") { err.hidden = false; err.textContent = tx("fail"); } }
+  } catch (ex) { if (ex.message !== "closed" && ex.message !== "blocked") { err.hidden = false; err.textContent = tx("fail"); } }
   b.disabled = false; sum();
 });
+
+// el pedido está en revisión (alguien lo reportó): no se muestra ni se aceptan precios
+function goReview() {
+  $("#loading").hidden = true; $("#form").hidden = true; $("#bar").hidden = true; $("#done").hidden = true;
+  $("#gone").hidden = false; $("#gone h1").dataset.t = "review_t"; $("#gone p").dataset.t = "review"; paintStatic();
+}
+async function reportIt() {
+  if (!m || !confirm(tx("report_q"))) return;
+  try {
+    const r = await fetch(`${API}/v1/rfq/report`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ rid: m[1], sid: m[2], why: "abuso" }) });
+    if (!r.ok) throw new Error("http");
+  } catch { alert(tx("fail")); return; }  // sin internet (o el servidor aún no tiene "reportar"): no se dice que se reportó
+  alert(tx("reported")); goReview();
+}
 
 (async () => {
   L = (navigator.language || "es").startsWith("pt") ? "pt" : (navigator.language || "").startsWith("en") ? "en" : "es";
@@ -278,8 +311,9 @@ $("#form").addEventListener("submit", async (e) => {
     if (!r.ok) throw new Error("gone");
     D = await r.json();
   } catch { $("#loading").hidden = true; $("#gone").hidden = false; return; }
-  L = D.lang || L;
+  L = savedLang() || D.lang || L;  // lo que eligió el proveedor > el idioma de ese proveedor (que puso la tienda) > su navegador
   sent = !!D.ans;
+  if (D.review) { goReview(); return; }
   rows();
   if (D.ans) { $("#days").value = D.ans.days || ""; $("#terms").value = D.ans.terms || ""; $("#note2").value = D.ans.note || ""; $("#who").value = D.ans.who || ""; }
   else { try { $("#who").value = localStorage.getItem("lg_rfq_who") || ""; } catch { /* */ } }

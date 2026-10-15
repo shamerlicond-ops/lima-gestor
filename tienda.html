@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Catálogo</title>
+<link rel="icon" href="icono.png">
+<style>
+  @font-face { font-family:"Manrope"; font-weight:400; font-display:swap; src:url(fonts/manrope-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family:"Manrope"; font-weight:600; font-display:swap; src:url(fonts/manrope-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family:"Manrope"; font-weight:700; font-display:swap; src:url(fonts/manrope-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family:"Manrope"; font-weight:800; font-display:swap; src:url(fonts/manrope-latin-800-normal.woff2) format("woff2"); }
+  @font-face { font-family:"Kalam"; font-weight:700; font-display:swap; src:url(fonts/kalam-latin-700-normal.woff2) format("woff2"); }
+  :root {
+    --paper:#EEF2EC; --ink:#18291F; --ink-2:#3A4B41; --muted:#5E6E64; --line:#DAE2D7;
+    --leaf:#1F4D35; --leaf-2:#2C6847; --lime:#B9DC5A; --lime-soft:#EAF5CC; --red:#B23A2A;
+    --card:#fff; --font:"Manrope","Segoe UI",system-ui,sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body { font-family:var(--font); color:var(--ink); background:var(--paper); line-height:1.45;
+    padding:0 14px calc(88px + env(safe-area-inset-bottom)); -webkit-font-smoothing:antialiased; }
+  [hidden] { display:none !important; }
+  .wrap { max-width:640px; margin:0 auto; }
+  .top { display:flex; align-items:center; gap:8px; padding:12px 0 8px; font-size:13px; color:var(--muted); }
+  .lang { margin-left:auto; display:flex; gap:3px; }
+  .lang button, .ghost { border:1px solid var(--line); background:#fff; border-radius:8px; padding:3px 8px; font:700 12px var(--font); color:var(--muted); cursor:pointer; }
+  .lang button.on { background:var(--leaf); border-color:var(--leaf); color:#fff; }
+  .store { font-family:"Kalam","Segoe Print",cursive; font-weight:700; font-size:32px; line-height:1.05; color:var(--leaf); margin:4px 0 0; word-break:break-word; }
+  .meta { margin:6px 0 0; font-size:13px; color:var(--muted); }
+  .search { width:100%; border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; font:600 16px var(--font); margin:14px 0 8px; background:#fff; }
+  .search:focus { outline:0; border-color:var(--leaf-2); box-shadow:0 0 0 3px var(--lime-soft); }
+  .cats { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .cats button { border:1px solid var(--line); background:#fff; border-radius:999px; padding:5px 11px; font:600 13px var(--font); cursor:pointer; color:var(--ink-2); }
+  .cats button.on { background:var(--ink); border-color:var(--ink); color:#fff; }
+  .grid { display:grid; gap:10px; }
+  .item { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; }
+  .item.out { opacity:.55; }
+  .name { font-weight:800; font-size:15.5px; }
+  .cat { display:block; font-size:12px; color:var(--muted); font-weight:600; }
+  .price { font-weight:800; font-size:17px; }
+  .qty { display:flex; align-items:center; gap:6px; }
+  .qty button { width:34px; height:34px; border:0; border-radius:10px; background:var(--leaf); color:#fff; font:800 18px var(--font); cursor:pointer; }
+  .qty button:disabled { opacity:.35; cursor:default; }
+  .qty b { min-width:18px; text-align:center; }
+  .bar { position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.96); backdrop-filter:blur(8px); border-top:1px solid var(--line);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom)); }
+  .bar .in { max-width:640px; margin:0 auto; display:flex; gap:12px; align-items:center; }
+  .sum { font-size:13px; color:var(--muted); } .sum b { display:block; color:var(--ink); font-size:18px; }
+  .btn { border:0; border-radius:12px; background:var(--leaf); color:#fff; font:800 16px var(--font); padding:14px 18px; cursor:pointer; margin-left:auto; }
+  .btn:disabled { opacity:.5; cursor:default; }
+  .btn.sec { background:#fff; color:var(--leaf); border:1.5px solid var(--leaf); }
+  .sheet { position:fixed; inset:0; background:rgba(24,41,31,.45); z-index:5; display:flex; align-items:flex-end; justify-content:center; }
+  .sheet .box { background:#fff; width:100%; max-width:640px; border-radius:18px 18px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); max-height:92vh; overflow:auto; }
+  .sheet h2 { margin:0 0 10px; font-size:20px; }
+  label.f { display:grid; gap:5px; font-size:13.5px; font-weight:700; color:var(--ink-2); margin-top:10px; }
+  label.f input, label.f textarea { border:1.5px solid var(--line); border-radius:10px; padding:11px 12px; font:500 16px var(--font); }
+  label.f input:focus, label.f textarea:focus { outline:0; border-color:var(--leaf-2); box-shadow:0 0 0 3px var(--lime-soft); }
+  .hp { position:absolute; left:-9999px; height:0; overflow:hidden; }
+  .chk { display:flex; align-items:center; gap:8px; margin-top:12px; font-weight:600; }
+  .actions { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+  .state { text-align:center; padding:40px 16px; }
+  .okid { font:800 22px ui-monospace,Consolas,monospace; letter-spacing:.04em; }
+  .foot { margin:22px 0 8px; font-size:12px; color:var(--muted); text-align:center; }
+  .foot a { color:var(--leaf); }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const API = (location.hostname === "127.0.0.1" || location.hostname === "localhost")
+  ? (new URLSearchParams(location.search).get("api") || location.origin)
+  : "https://lima-api.shamer-licond.workers.dev";
+const SLUG = (new URLSearchParams(location.search).get("t") || "").toLowerCase();
+const T = {
+  es: { load:"Cargando…", gone:"Este catálogo no está disponible.", bad:"Falta el enlace de la tienda.",
+    search:"Buscar producto", all:"Todos", out:"Agotado", cart:"Pedido", empty:"Agrega productos para pedir.",
+    name:"Tu nombre", phone:"Celular (WhatsApp)", note:"Nota (opcional)", delivery:"Quiero delivery (la tienda confirma zona y costo)",
+    buy:"Pedir", quote:"Pedir cotización", chat:"Escribir a la tienda", report:"Reportar esta tienda",
+    sent:"Pedido enviado", sentq:"Cotización enviada", hold:"Lo guardamos en este celular. Se envía al volver internet.",
+    id:"Tu número", more:"Seguir viendo", wait:"Enviando…", err:"No se pudo enviar. Queda guardado aquí.",
+    phonebad:"Escribe un celular válido.", items:"Elige al menos un producto.", blocked:"Ese texto no se puede enviar.",
+    priv:"Tus datos solo se usan para este pedido.", lima:"Hecho con Lima Gestor", reported:"Gracias. Lo revisamos." },
+  pt: { load:"Carregando…", gone:"Este catálogo não está disponível.", bad:"Falta o link da loja.",
+    search:"Buscar produto", all:"Todos", out:"Esgotado", cart:"Pedido", empty:"Adicione produtos para pedir.",
+    name:"Seu nome", phone:"Celular (WhatsApp)", note:"Observação (opcional)", delivery:"Quero entrega (a loja confirma região e frete)",
+    buy:"Pedir", quote:"Pedir orçamento", chat:"Escrever para a loja", report:"Denunciar esta loja",
+    sent:"Pedido enviado", sentq:"Orçamento enviado", hold:"Guardamos neste celular. Envia quando voltar a internet.",
+    id:"Seu número", more:"Continuar vendo", wait:"Enviando…", err:"Não deu para enviar. Ficou salvo aqui.",
+    phonebad:"Digite um celular válido.", items:"Escolha pelo menos um produto.", blocked:"Esse texto não pode ser enviado.",
+    priv:"Seus dados só são usados neste pedido.", lima:"Feito com Lima Gestor", reported:"Obrigado. Vamos revisar." },
+  en: { load:"Loading…", gone:"This catalog isn't available.", bad:"The store link is missing.",
+    search:"Search products", all:"All", out:"Sold out", cart:"Order", empty:"Add products to order.",
+    name:"Your name", phone:"Mobile (WhatsApp)", note:"Note (optional)", delivery:"I want delivery (the store confirms area and fee)",
+    buy:"Order", quote:"Request quote", chat:"Message the store", report:"Report this store",
+    sent:"Order sent", sentq:"Quote sent", hold:"Saved on this phone. It will send when you're back online.",
+    id:"Your number", more:"Keep browsing", wait:"Sending…", err:"Couldn't send. It's saved here.",
+    phonebad:"Enter a valid mobile number.", items:"Pick at least one product.", blocked:"That text can't be sent.",
+    priv:"Your details are only used for this order.", lima:"Made with Lima Gestor", reported:"Thanks. We'll review it." },
+};
+let lg = (navigator.language || "es").slice(0, 2);
+if (!T[lg]) lg = "es";
+const t = (k) => (T[lg] && T[lg][k]) || T.es[k] || k;
+const $ = (s, r) => (r || document).querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+const SYM = { PEN:"S/", BRL:"R$", USD:"$" };
+function money(cents, cur) {
+  const n = (Number(cents) || 0) / 100;
+  const loc = cur === "BRL" ? "pt-BR" : cur === "USD" ? "en-US" : "es-PE";
+  return (SYM[cur] || cur || "") + " " + n.toLocaleString(loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+const BOX = "lg_shop_outbox";
+function outbox() { try { return JSON.parse(localStorage.getItem(BOX) || "[]"); } catch { return []; } }
+function saveBox(a) { try { localStorage.setItem(BOX, JSON.stringify(a)); } catch { /* */ } }
+let shop = null, cart = {}, q = "", cat = "", sheet = false, done = null;
+
+async function api(path, body) {
+  const r = await fetch(API + path, { method: body ? "POST" : "GET", headers: body ? { "content-type": "application/json" } : {}, body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(j.error || "err"); e.code = j.error; throw e; }
+  return j;
+}
+
+async function flush() {
+  const pending = outbox();
+  const keep = [];
+  for (const o of pending) {
+    try {
+      const r = await api("/v1/shop/order", o);
+      if (r && r.id) o.sent = r.id;
+      else keep.push(o);
+    } catch (e) {
+      if (e.code === "content_blocked" || e.code === "closed" || e.code === "gone") continue;
+      keep.push(o);
+    }
+  }
+  saveBox(keep);
+  return pending.find((o) => o.sent);
+}
+
+function lines() {
+  return (shop.items || []).filter((i) => cart[i.id]).map((i) => ({ ...i, q: cart[i.id] }));
+}
+function total() { return lines().reduce((s, i) => s + i.p * i.q, 0); }
+function count() { return lines().reduce((s, i) => s + i.q, 0); }
+
+function render() {
+  const app = $("#app");
+  if (!SLUG) { app.innerHTML = `<div class="state"><h2>${t("bad")}</h2></div>`; return; }
+  if (!shop) { app.innerHTML = `<div class="state">${t("load")}</div>`; return; }
+  if (shop.gone) { app.innerHTML = `<div class="state"><h2>${t("gone")}</h2></div>`; return; }
+  if (done) {
+    app.innerHTML = `<div class="state">
+      <h2>${done.kind === "quote" ? t("sentq") : t("sent")}</h2>
+      ${done.hold ? `<p>${t("hold")}</p>` : ""}
+      ${done.id && done.id !== "ok" ? `<p>${t("id")}<br><span class="okid">${esc(done.id)}</span></p>` : ""}
+      <button class="btn" id="more">${t("more")}</button></div>`;
+    $("#more").onclick = () => { done = null; cart = {}; render(); };
+    return;
+  }
+  const cats = [...new Set((shop.items || []).map((i) => i.c).filter(Boolean))];
+  const qq = q.trim().toLowerCase();
+  const list = (shop.items || []).filter((i) => (!cat || i.c === cat) && (!qq || (i.n + " " + i.c).toLowerCase().includes(qq)));
+  const phone = shop.phone || "";
+  app.innerHTML = `
+    <div class="top"><span>Lima Gestor</span>
+      <div class="lang">${["es","pt","en"].map((l) => `<button class="${lg===l?"on":""}" data-lg="${l}">${l.toUpperCase()}</button>`).join("")}</div></div>
+    <h1 class="store">${esc(shop.store || "")}</h1>
+    <p class="meta">${[shop.address, shop.hours].filter(Boolean).map(esc).join(" · ")}</p>
+    ${phone ? `<p class="meta"><button class="ghost" id="chat">${t("chat")}</button></p>` : ""}
+    <input class="search" id="q" placeholder="${t("search")}" value="${esc(q)}">
+    ${cats.length ? `<div class="cats"><button class="${!cat?"on":""}" data-cat="">${t("all")}</button>${cats.map((c) => `<button class="${cat===c?"on":""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("")}</div>` : ""}
+    <div class="grid">${list.map((i) => `<div class="item ${i.ok?"":"out"}">
+      <div><span class="name">${esc(i.n)}</span>${i.c?`<span class="cat">${esc(i.c)}</span>`:""}${i.ok?"":`<span class="cat">${t("out")}</span>`}</div>
+      <div style="text-align:right"><div class="price">${money(i.p, shop.cur)}</div>
+        ${i.ok ? `<div class="qty"><button data-m="${i.id}">−</button><b>${cart[i.id]||0}</b><button data-p="${i.id}">+</button></div>` : ""}</div>
+    </div>`).join("")}</div>
+    <p class="foot">${t("priv")} · <button class="ghost" id="rep">${t("report")}</button><br><a href="https://limasoftwares.com">${t("lima")}</a></p>
+    <div class="bar" ${count()?"":"hidden"}><div class="in">
+      <div class="sum">${count()} · ${t("cart")}<b>${money(total(), shop.cur)}</b></div>
+      <button class="btn" id="go">${t("buy")}</button></div></div>
+    ${sheet ? checkoutHtml() : ""}`;
+  app.querySelectorAll("[data-lg]").forEach((b) => b.onclick = () => { lg = b.dataset.lg; render(); });
+  const sq = $("#q"); if (sq) sq.oninput = () => { q = sq.value; render(); sq.focus(); const el=$("#q"); if(el){ el.setSelectionRange(q.length,q.length);} };
+  app.querySelectorAll("[data-cat]").forEach((b) => b.onclick = () => { cat = b.dataset.cat; render(); });
+  app.querySelectorAll("[data-p]").forEach((b) => b.onclick = () => add(+b.dataset.p, 1));
+  app.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => add(+b.dataset.m, -1));
+  const go = $("#go"); if (go) go.onclick = () => { sheet = true; render(); };
+  const ch = $("#chat"); if (ch) ch.onclick = () => location.href = `https://wa.me/${phone}?text=${encodeURIComponent((shop.store||"") + " — " + (location.href))}`;
+  const rp = $("#rep"); if (rp) rp.onclick = report;
+  if (sheet) bindSheet();
+}
+
+function add(id, d) {
+  const n = (cart[id] || 0) + d;
+  if (n <= 0) delete cart[id]; else cart[id] = Math.min(50, n);
+  render();
+}
+
+function checkoutHtml() {
+  return `<div class="sheet" id="sheet"><div class="box">
+    <h2>${t("cart")}</h2>
+    ${lines().length ? lines().map((i) => `<div class="item"><div>${esc(i.n)} × ${i.q}</div><b>${money(i.p*i.q, shop.cur)}</b></div>`).join("") : `<p>${t("empty")}</p>`}
+    <form id="f">
+      <label class="hp" aria-hidden="true"><input name="hp" tabindex="-1" autocomplete="off"></label>
+      <label class="f">${t("name")}<input name="name" required maxlength="60"></label>
+      <label class="f">${t("phone")}<input name="phone" required inputmode="tel" maxlength="16"></label>
+      <label class="f">${t("note")}<textarea name="note" rows="2" maxlength="240"></textarea></label>
+      <label class="chk"><input type="checkbox" name="delivery"> ${t("delivery")}</label>
+      <div class="actions">
+        <button type="button" class="btn sec" id="cx">${t("more")}</button>
+        <button type="submit" class="btn sec" data-k="quote">${t("quote")}</button>
+        <button type="submit" class="btn" data-k="buy">${t("buy")}</button>
+      </div>
+    </form></div></div>`;
+}
+
+function bindSheet() {
+  $("#cx").onclick = () => { sheet = false; render(); };
+  $("#sheet").addEventListener("click", (e) => { if (e.target.id === "sheet") { sheet = false; render(); } });
+  let kind = "buy";
+  $("#f").querySelectorAll("[data-k]").forEach((b) => b.addEventListener("click", () => { kind = b.dataset.k; }));
+  $("#f").onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData($("#f"));
+    const items = lines().map((i) => ({ id: i.id, q: i.q }));
+    if (!items.length) return alert(t("items"));
+    const phone = String(fd.get("phone") || "").replace(/\D/g, "");
+    if (phone.length < 8) return alert(t("phonebad"));
+    const payload = {
+      slug: SLUG, name: String(fd.get("name") || "").trim(), phone, note: String(fd.get("note") || "").trim(),
+      kind, delivery: !!fd.get("delivery"), items, lang: lg, hp: String(fd.get("hp") || ""),
+    };
+    const box = outbox();
+    box.push({ ...payload, at: Date.now() });
+    saveBox(box);
+    const btns = [...$("#f").querySelectorAll("button")];
+    btns.forEach((b) => { b.disabled = true; if (b.dataset.k) b.textContent = t("wait"); });
+    let sent = null, hold = false;
+    try {
+      const flushed = await flush();
+      sent = (flushed && flushed.sent) || null;
+      if (!sent) hold = true;
+    } catch { hold = true; }
+    sheet = false;
+    done = { id: sent || "", kind, hold: hold || !sent };
+    render();
+  };
+}
+
+async function report() {
+  try { await api("/v1/shop/report", { slug: SLUG }); alert(t("reported")); } catch { /* */ }
+}
+
+(async () => {
+  if (!SLUG) { render(); return; }
+  try {
+    shop = await api("/v1/shop/q/" + SLUG);
+    if (shop.lang && T[shop.lang]) lg = shop.lang;
+    document.title = shop.store || "Catálogo";
+    document.documentElement.lang = lg;
+  } catch {
+    shop = { gone: true };
+  }
+  render();
+  flush().then((o) => { if (o && o.sent && !done) { done = { id: o.sent, kind: o.kind || "buy", hold: false }; render(); } });
+})();
+</script>
+</body>
+</html>
