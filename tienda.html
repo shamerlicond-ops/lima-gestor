@@ -70,14 +70,11 @@
 <body>
 <div class="wrap" id="app"></div>
 <script>
-const WORKER = "https://lima-api.shamer-licond.workers.dev";
 function apiBases() {
   const h = location.hostname;
   if (h === "127.0.0.1" || h === "localhost")
     return [new URLSearchParams(location.search).get("api") || location.origin];
-  if (h === "limasoftwares.com" || h === "www.limasoftwares.com" || h === "limasoftwares.pages.dev")
-    return [location.origin, WORKER];
-  return ["https://limasoftwares.com", WORKER];
+  return ["https://limasoftwares.com"];
 }
 const SLUG = (new URLSearchParams(location.search).get("t") || "").toLowerCase();
 const T = {

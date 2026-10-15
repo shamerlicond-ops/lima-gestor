@@ -564,8 +564,7 @@ T.ref_box = ["🎁 Te recomendó una tienda que ya usa Lima Gestor. Cuando pague
 const LI = { es: 0, pt: 1, en: 2 };
 let L = "es", C = "PE", VER = null, userC = false, PROMO = null, RUB = "tiendas";
 const BOT_SALE = false;  // el bot de WhatsApp está en fase de pruebas: sin fecha de salida todavía
-const API = (location.hostname === "limasoftwares.com" || location.hostname === "www.limasoftwares.com" || location.hostname === "limasoftwares.pages.dev")
-  ? location.origin : "https://limasoftwares.com";
+const API = (location.hostname === "127.0.0.1" || location.hostname === "localhost") ? location.origin : "https://limasoftwares.com";
 // descuento que Lima Softwares define en LimaAdmin (mismo redondeo que el programa: a la unidad)
 const promoFor = (plan) => (PROMO && (PROMO.country || "ALL") !== (C === "PE" ? "BR" : "PE") ? ((PROMO.plans || {})[plan] ?? (PROMO.plans ? 0 : PROMO.pct)) : 0);
 const disc = (v, pct) => (pct ? Math.floor((v * 100 * (100 - pct) + 5000) / 10000) : v);
