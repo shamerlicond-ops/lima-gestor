@@ -136,7 +136,8 @@
 </div></div>
 
 <script>
-const API = "https://lima-api.shamer-licond.workers.dev";
+const API = (location.hostname === "limasoftwares.com" || location.hostname === "www.limasoftwares.com" || location.hostname === "limasoftwares.pages.dev")
+  ? location.origin : "https://limasoftwares.com";
 // ▶ VIDEO GUÍA de esta página: pega aquí el enlace de YouTube de cada idioma (vacío = "Video próximamente").
 const VIDEOS = { es: "", pt: "", en: "" };
 const T = {

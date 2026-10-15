@@ -70,9 +70,15 @@
 <body>
 <div class="wrap" id="app"></div>
 <script>
-const API = (location.hostname === "127.0.0.1" || location.hostname === "localhost")
-  ? (new URLSearchParams(location.search).get("api") || location.origin)
-  : "https://lima-api.shamer-licond.workers.dev";
+const WORKER = "https://lima-api.shamer-licond.workers.dev";
+function apiBases() {
+  const h = location.hostname;
+  if (h === "127.0.0.1" || h === "localhost")
+    return [new URLSearchParams(location.search).get("api") || location.origin];
+  if (h === "limasoftwares.com" || h === "www.limasoftwares.com" || h === "limasoftwares.pages.dev")
+    return [location.origin, WORKER];
+  return ["https://limasoftwares.com", WORKER];
+}
 const SLUG = (new URLSearchParams(location.search).get("t") || "").toLowerCase();
 const T = {
   es: { load:"Cargando…", gone:"Este catálogo no está disponible.", bad:"Falta el enlace de la tienda.",
@@ -117,10 +123,29 @@ function saveBox(a) { try { localStorage.setItem(BOX, JSON.stringify(a)); } catc
 let shop = null, cart = {}, q = "", cat = "", sheet = false, done = null;
 
 async function api(path, body) {
-  const r = await fetch(API + path, { method: body ? "POST" : "GET", headers: body ? { "content-type": "application/json" } : {}, body: body ? JSON.stringify(body) : undefined });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) { const e = new Error(j.error || "err"); e.code = j.error; throw e; }
-  return j;
+  let last = new Error("err");
+  for (const base of apiBases()) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 10000);
+    try {
+      const r = await fetch(base + path, {
+        method: body ? "POST" : "GET",
+        headers: body ? { "content-type": "application/json" } : {},
+        body: body ? JSON.stringify(body) : undefined,
+        signal: ctrl.signal,
+      });
+      if (!((r.headers.get("content-type") || "").includes("json"))) { last = new Error("err"); continue; }
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { const e = new Error(j.error || "err"); e.code = j.error; throw e; }
+      return j;
+    } catch (e) {
+      if (e && e.code) throw e;
+      last = e;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw last;
 }
 
 async function flush() {

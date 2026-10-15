@@ -40,7 +40,8 @@
   <p class="small" data-t="privacy"></p>
 </div>
 <script>
-const API = "https://lima-api.shamer-licond.workers.dev";
+const API = (location.hostname === "limasoftwares.com" || location.hostname === "www.limasoftwares.com" || location.hostname === "limasoftwares.pages.dev")
+  ? location.origin : "https://limasoftwares.com";
 const T = {
   title: ["Conecta el WhatsApp de tu tienda", "Conecte o WhatsApp da sua loja", "Connect your store's WhatsApp"],
   lead: ["Lima Gestor atenderá a tus clientes por WhatsApp con tu stock real. No necesitas crear apps ni copiar códigos.", "O Lima Gestor vai atender seus clientes pelo WhatsApp com seu estoque real. Não precisa criar apps nem copiar códigos.", "Lima Gestor will serve your customers on WhatsApp with your real stock. No apps to create, no codes to copy."],

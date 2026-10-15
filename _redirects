@@ -1,0 +1,3 @@
+# El celular pide /v1/* a limasoftwares.com (pasa en Brasil).
+# Cloudflare reenvía al worker: mismo KV, mismos catálogos. Nada se crea de cero.
+/v1/* https://lima-api.shamer-licond.workers.dev/v1/:splat 200

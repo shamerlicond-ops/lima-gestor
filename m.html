@@ -30,7 +30,8 @@
 <script>
 // Celular del dueño: esta página (dirección fija) guarda la llave de la tienda y abre la computadora principal,
 // aunque su dirección de internet cambie cada vez que se prende.
-const API = "https://lima-api.shamer-licond.workers.dev";
+const API = (location.hostname === "limasoftwares.com" || location.hostname === "www.limasoftwares.com" || location.hostname === "limasoftwares.pages.dev")
+  ? location.origin : "https://limasoftwares.com";
 const L = (navigator.language || "es").slice(0, 2);
 const T = {
   open: ["Abriendo tu tienda…", "Abrindo sua loja…", "Opening your store…"],

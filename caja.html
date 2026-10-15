@@ -37,7 +37,8 @@
 <script>
 // Celular o tablet como CAJA desde otra red: esta página (dirección fija) guarda el código de la tienda y una llave
 // propia del celular, y abre la computadora principal aunque su dirección de internet cambie al reiniciarse.
-const API = "https://lima-api.shamer-licond.workers.dev";
+const API = (location.hostname === "limasoftwares.com" || location.hostname === "www.limasoftwares.com" || location.hostname === "limasoftwares.pages.dev")
+  ? location.origin : "https://limasoftwares.com";
 const L = (navigator.language || "es").slice(0, 2);
 const T = {
   t: ["Conectar este equipo a la tienda", "Conectar este aparelho à loja", "Connect this device to the store"],
