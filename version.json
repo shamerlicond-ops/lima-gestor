@@ -1,14 +1,14 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "date": "2026-10-15",
   "size_mb": 42,
-  "bytes": 44386352,
-  "sha256": "7c71e0b94096d04bf13607c5a338374a015f7f9c4724988bc78f48889729105a",
-  "file": "LimaGestor_Instalador_1.0.1.exe",
+  "bytes": 44397803,
+  "sha256": "8dff572a2e9ba708ded7a02f040627f2c9d509b6c6bc3d1d2736ab3592df62f1",
+  "file": "LimaGestor_Instalador_1.0.2.exe",
   "parts": [
-    "descarga/LimaGestor_1.0.1.part1",
-    "descarga/LimaGestor_1.0.1.part2",
-    "descarga/LimaGestor_1.0.1.part3"
+    "descarga/LimaGestor_1.0.2.part1",
+    "descarga/LimaGestor_1.0.2.part2",
+    "descarga/LimaGestor_1.0.2.part3"
   ],
   "url": "https://apps.microsoft.com/detail/9nh48qqgnwbt",
   "store_url": "https://apps.microsoft.com/detail/9nh48qqgnwbt"
