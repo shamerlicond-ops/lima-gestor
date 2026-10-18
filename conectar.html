@@ -141,7 +141,7 @@ async function finish(code) {
   for (let i = 0; i < 20 && !session.waba_id; i++) await new Promise((r) => setTimeout(r, 300));  // el aviso puede llegar un poco después
   try {
     const r = await fetch(API + "/v1/es/finish", { method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id: SID, code, waba_id: session.waba_id, phone_number_id: session.phone_number_id, coex: coexEl.checked }) });
+      body: JSON.stringify({ id: SID, code, page: location.href.split("#")[0], waba_id: session.waba_id, phone_number_id: session.phone_number_id, coex: coexEl.checked }) });
     const d = await r.json();
     if (d.ok) { finished = true; go.hidden = true; return msg("done", "ok"); }
     if (d.error === "es_expired") return msg("expired", "bad");
