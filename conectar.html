@@ -146,7 +146,7 @@ async function finish(code) {
     if (d.ok) { finished = true; go.hidden = true; return msg("done", "ok"); }
     if (d.error === "es_expired") return msg("expired", "bad");
     if (d.error === "es_incomplete") msg("incomplete", "bad", ` [${d.why || "?"}${session.seen.length ? " · " + session.seen.join(",") : " · sin_eventos"}]`);
-    else msg("error", "bad", d.msg || d.error || "");
+    else msg("error", "bad", (d.msg || d.error || "") + (d.tried ? " [" + d.tried + "]" : ""));
   } catch (e) { msg("error", "bad", String(e)); }
   busyNow = false; sync();
 }
