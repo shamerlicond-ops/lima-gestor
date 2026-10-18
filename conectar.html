@@ -158,7 +158,7 @@ async function start() {
   try { cfg = await (await fetch(API + "/v1/es/config")).json(); } catch { cfg = { ok: false }; }
   if (!cfg.ok) { msg("off", "bad"); return; }
   window.fbAsyncInit = () => {
-    FB.init({ appId: cfg.app_id, autoLogAppEvents: true, xfbml: false, version: "v23.0" });
+    FB.init({ appId: cfg.app_id, autoLogAppEvents: true, xfbml: false, version: "v26.0" });
     document.getElementById("msg").hidden = true;
     fbReady = true; sync();
   };
@@ -175,7 +175,7 @@ async function start() {
       msg("cancel", "bad"); busyNow = false; sync();
     }, {
       config_id: cfg.config_id, response_type: "code", override_default_response_type: true,
-      extras: { setup: {}, featureType: coex ? "whatsapp_business_app_onboarding" : "", sessionInfoVersion: "3" },
+      extras: Object.assign({ version: "v4", sessionInfoVersion: "3" }, coex ? { featureType: "whatsapp_business_app_onboarding" } : {}),   // Embedded Signup v4 (v2/v3 ya no funcionan)
     });
   };
 }
