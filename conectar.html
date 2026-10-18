@@ -123,14 +123,14 @@ coexEl.onchange = () => { if (coexEl.checked) botEl.checked = false; sync(); }; 
 botEl.onchange = () => { if (botEl.checked) coexEl.checked = false; sync(); };
 paint();
 
-let session = { waba_id: "", phone_number_id: "", seen: [] }, finished = false;
+let session = { waba_id: "", phone_number_id: "", business_id: "", seen: [] }, finished = false;
 window.addEventListener("message", (e) => {  // datos que manda la ventana de Facebook
   if (!/(^|\.)facebook\.com$/.test(new URL(e.origin).hostname)) return;
   try {
     const d = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
     if (d && d.type === "WA_EMBEDDED_SIGNUP") {
       session.seen.push(String(d.event || "?"));
-      if (String(d.event || "").startsWith("FINISH")) { session.waba_id = d.data?.waba_id || ""; session.phone_number_id = d.data?.phone_number_id || ""; }
+      if (String(d.event || "").startsWith("FINISH")) { session.waba_id = d.data?.waba_id || ""; session.phone_number_id = d.data?.phone_number_id || ""; session.business_id = d.data?.business_id || ""; }
       else if (d.event === "CANCEL") { session.cancel = d.data?.current_step || "cancel"; }
     }
   } catch { /* otros mensajes */ }
@@ -141,7 +141,7 @@ async function finish(code) {
   for (let i = 0; i < 20 && !session.waba_id; i++) await new Promise((r) => setTimeout(r, 300));  // el aviso puede llegar un poco después
   try {
     const r = await fetch(API + "/v1/es/finish", { method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id: SID, code, page: location.href.split("#")[0], waba_id: session.waba_id, phone_number_id: session.phone_number_id, coex: coexEl.checked }) });
+      body: JSON.stringify({ id: SID, code, page: location.href.split("#")[0], waba_id: session.waba_id, phone_number_id: session.phone_number_id, business_id: session.business_id, coex: coexEl.checked }) });
     const d = await r.json();
     if (d.ok) { finished = true; go.hidden = true; return msg("done", "ok"); }
     if (d.error === "es_expired") return msg("expired", "bad");
