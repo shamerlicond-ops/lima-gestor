@@ -123,13 +123,14 @@ coexEl.onchange = () => { if (coexEl.checked) botEl.checked = false; sync(); }; 
 botEl.onchange = () => { if (botEl.checked) coexEl.checked = false; sync(); };
 paint();
 
-let session = { waba_id: "", phone_number_id: "" }, finished = false;
+let session = { waba_id: "", phone_number_id: "", seen: [] }, finished = false;
 window.addEventListener("message", (e) => {  // datos que manda la ventana de Facebook
   if (!/(^|\.)facebook\.com$/.test(new URL(e.origin).hostname)) return;
   try {
     const d = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
     if (d && d.type === "WA_EMBEDDED_SIGNUP") {
-      if (String(d.event || "").startsWith("FINISH")) session = { waba_id: d.data?.waba_id || "", phone_number_id: d.data?.phone_number_id || "" };
+      session.seen.push(String(d.event || "?"));
+      if (String(d.event || "").startsWith("FINISH")) { session.waba_id = d.data?.waba_id || ""; session.phone_number_id = d.data?.phone_number_id || ""; }
       else if (d.event === "CANCEL") { session.cancel = d.data?.current_step || "cancel"; }
     }
   } catch { /* otros mensajes */ }
@@ -144,7 +145,7 @@ async function finish(code) {
     const d = await r.json();
     if (d.ok) { finished = true; go.hidden = true; return msg("done", "ok"); }
     if (d.error === "es_expired") return msg("expired", "bad");
-    if (d.error === "es_incomplete") msg("incomplete", "bad");
+    if (d.error === "es_incomplete") msg("incomplete", "bad", ` [${d.why || "?"}${session.seen.length ? " · " + session.seen.join(",") : " · sin_eventos"}]`);
     else msg("error", "bad", d.msg || d.error || "");
   } catch (e) { msg("error", "bad", String(e)); }
   busyNow = false; sync();
