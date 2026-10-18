@@ -20,9 +20,16 @@
   p { margin:0; } ol { margin:0; padding-left:20px; display:grid; gap:4px; }
   .btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:14px; border:0; border-radius:12px; background:var(--blue); color:#fff; font-weight:800; font-size:16px; font-family:inherit; cursor:pointer; }
   .btn:disabled { opacity:.6; cursor:default; }
+  .num { background:var(--sky); border-radius:12px; padding:10px 14px; font-size:15px; }
   .check { display:flex; gap:10px; align-items:flex-start; font-size:14px; cursor:pointer; } .check input { width:18px; height:18px; margin-top:3px; }
   .msg { border-radius:12px; padding:12px 14px; font-weight:600; } .ok { background:#E7F6EE; color:#145E37; } .bad { background:#F8E2DD; color:var(--red); } .wait { background:var(--sky); color:var(--navy); }
   .small { font-size:13px; color:var(--muted); }
+  h2 { font-size:15px; margin:6px 0 0; color:var(--navy); }
+  ul { margin:0; padding-left:20px; display:grid; gap:4px; font-size:14px; }
+  ol li { font-size:14.5px; } ol li b { color:var(--navy); }
+  .opt { border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:grid; gap:6px; }
+  .opt .small { padding-left:28px; margin:0; }
+  .tip { background:var(--sky); border-radius:12px; padding:10px 14px; font-size:13.5px; }
   .lang { margin-left:auto; display:flex; gap:3px; } .lang button { border:1px solid var(--line); background:#fff; border-radius:8px; padding:3px 8px; font-weight:700; font-size:12px; font-family:inherit; color:var(--muted); cursor:pointer; } .lang button.on { background:var(--navy); color:#fff; }
   [hidden] { display:none !important; }
 </style>
@@ -33,8 +40,16 @@
     <div class="lang"><button data-l="es">ES</button><button data-l="pt">PT</button><button data-l="en">EN</button></div></div>
   <h1 data-t="title"></h1>
   <p data-t="lead"></p>
-  <ol><li data-t="s1"></li><li data-t="s2"></li><li data-t="s3"></li></ol>
-  <label class="check"><input type="checkbox" id="coex"><span data-t="coex"></span></label>
+  <h2 data-t="prep_t"></h2>
+  <ul><li data-t="prep1"></li><li data-t="prep2"></li><li data-t="prep3"></li></ul>
+  <h2 data-t="steps_t"></h2>
+  <ol><li data-t="s1"></li><li data-t="s2"></li><li data-t="s3"></li><li data-t="s4"></li><li data-t="s5"></li><li data-t="s6"></li><li data-t="s7"></li></ol>
+  <p class="tip" data-t="tip_cat"></p>
+  <h2 data-t="opt_t"></h2>
+  <p class="num" id="numbox" hidden><span data-t="numlead"></span> <b id="num"></b></p>
+  <div class="opt"><label class="check"><input type="checkbox" id="coex"><span id="coex_t"></span></label><p class="small" data-t="coex_d"></p></div>
+  <div class="opt"><label class="check"><input type="checkbox" id="botonly"><span id="botonly_t"></span></label><p class="small" data-t="botonly_d"></p></div>
+  <p class="small" data-t="time"></p>
   <button class="btn" id="go" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg><span data-t="btn"></span></button>
   <div class="msg wait" id="msg" hidden></div>
   <p class="small" data-t="privacy"></p>
@@ -44,10 +59,29 @@ const API = (location.hostname === "127.0.0.1" || location.hostname === "localho
 const T = {
   title: ["Conecta el WhatsApp de tu tienda", "Conecte o WhatsApp da sua loja", "Connect your store's WhatsApp"],
   lead: ["Lima Gestor atenderá a tus clientes por WhatsApp con tu stock real. No necesitas crear apps ni copiar códigos.", "O Lima Gestor vai atender seus clientes pelo WhatsApp com seu estoque real. Não precisa criar apps nem copiar códigos.", "Lima Gestor will serve your customers on WhatsApp with your real stock. No apps to create, no codes to copy."],
-  s1: ["Toca el botón y entra con tu Facebook (el del dueño).", "Toque no botão e entre com o seu Facebook (do dono).", "Tap the button and log in with your (the owner's) Facebook."],
-  s2: ["Elige o crea la cuenta de tu negocio y tu cuenta de WhatsApp Business.", "Escolha ou crie a conta do seu negócio e a conta do WhatsApp Business.", "Pick or create your business account and WhatsApp Business account."],
-  s3: ["Escribe el número de la tienda y el código que te llega por SMS o llamada. Listo.", "Digite o número da loja e o código que chegar por SMS ou ligação. Pronto.", "Enter the store's number and the code you get by SMS or call. Done."],
-  coex: ["Ya uso la app WhatsApp Business en el celular con este número y quiero seguir usándola.", "Já uso o app WhatsApp Business no celular com este número e quero continuar usando.", "I already use the WhatsApp Business app on my phone with this number and want to keep using it."],
+  prep_t: ["Antes de empezar, ten a la mano", "Antes de começar, tenha à mão", "Before you start, have ready"],
+  prep1: ["El Facebook del dueño: la persona que administra el negocio en Facebook o Meta. Si no tienes cuenta de empresa, ahí mismo se crea.", "O Facebook do dono: a pessoa que administra o negócio no Facebook ou na Meta. Se não tiver conta empresarial, ela é criada ali mesmo.", "The owner's Facebook: the person who manages the business on Facebook or Meta. If you have no business account, it's created right there."],
+  prep2: ["Tu celular con señal: Meta puede enviarte un código por SMS o llamada al número del chatbot, o pedirte escanear un código QR con la app WhatsApp Business.", "Seu celular com sinal: a Meta pode enviar um código por SMS ou ligação ao número do chatbot, ou pedir para escanear um QR code no app WhatsApp Business.", "Your phone with signal: Meta may send a code by SMS or call to the chatbot number, or ask you to scan a QR code with the WhatsApp Business app."],
+  prep3: ["Unos 5 minutos. No cierres esta página hasta ver «¡Listo!».", "Uns 5 minutos. Não feche esta página até ver «Pronto!».", "About 5 minutes. Don't close this page until you see “Done!”."],
+  steps_t: ["Qué va a pasar, paso a paso", "O que vai acontecer, passo a passo", "What will happen, step by step"],
+  s1: ["<b>Aquí:</b> marca abajo una de las dos opciones (cómo usarás el número) y toca «Conectar con Facebook».", "<b>Aqui:</b> marque abaixo uma das duas opções (como vai usar o número) e toque em «Conectar com o Facebook».", "<b>Here:</b> tick one of the two options below (how you'll use the number) and tap “Continue with Facebook”."],
+  s2: ["<b>Facebook:</b> inicia sesión con el Facebook del dueño y toca «Continuar». Se abre una ventana de Meta encima de esta página.", "<b>Facebook:</b> entre com o Facebook do dono e toque em «Continuar». Abre uma janela da Meta sobre esta página.", "<b>Facebook:</b> log in with the owner's Facebook and tap “Continue”. A Meta window opens on top of this page."],
+  s3: ["<b>Tu negocio:</b> elige tu cuenta de empresa o crea una nueva (nombre de la tienda, país y, si tienes, tu sitio web).", "<b>Seu negócio:</b> escolha sua conta empresarial ou crie uma nova (nome da loja, país e, se tiver, seu site).", "<b>Your business:</b> pick your business account or create a new one (store name, country and, if you have one, your website)."],
+  s4: ["<b>Catálogo (opcional):</b> no necesitas crearlo tú. Si Meta lo muestra, déjalo como está: Lima Gestor crea y mantiene el catálogo con tus productos al terminar.", "<b>Catálogo (opcional):</b> você não precisa criá-lo. Se a Meta mostrar, deixe como está: o Lima Gestor cria e mantém o catálogo com seus produtos ao terminar.", "<b>Catalog (optional):</b> you don't need to create it. If Meta shows it, leave it as is: Lima Gestor creates and keeps the catalog with your products when done."],
+  s5: ["<b>Tu WhatsApp Business:</b> elige o crea la cuenta de WhatsApp Business y escribe el nombre con que verán tu tienda tus clientes.", "<b>Seu WhatsApp Business:</b> escolha ou crie a conta do WhatsApp Business e digite o nome com que seus clientes verão sua loja.", "<b>Your WhatsApp Business:</b> pick or create the WhatsApp Business account and type the name your customers will see."],
+  s6: ["<b>El número:</b> escribe el número del chatbot (el que pediste a Lima Softwares). Si es «solo chatbot», Meta te manda un código por SMS o llamada; si ya está en la app WhatsApp Business, Meta te muestra un QR para escanear desde esa app.", "<b>O número:</b> digite o número do chatbot (o que você pediu à Lima Softwares). Se for «só chatbot», a Meta envia um código por SMS ou ligação; se já estiver no app WhatsApp Business, a Meta mostra um QR para escanear nesse app.", "<b>The number:</b> type the chatbot number (the one you requested from Lima Softwares). If it's “chatbot only”, Meta sends a code by SMS or call; if it's already in the WhatsApp Business app, Meta shows a QR to scan from that app."],
+  s7: ["<b>Permisos:</b> Meta te muestra lo que Lima Gestor podrá hacer (administrar tu catálogo, tu cuenta de WhatsApp y sus conversaciones). Toca «Confirmar» y volverás a esta página con el mensaje «¡Listo!».", "<b>Permissões:</b> a Meta mostra o que o Lima Gestor poderá fazer (administrar seu catálogo, sua conta do WhatsApp e as conversas). Toque em «Confirmar» e você volta a esta página com a mensagem «Pronto!».", "<b>Permissions:</b> Meta shows what Lima Gestor will be able to do (manage your catalog, your WhatsApp account and its conversations). Tap “Confirm” and you'll return to this page with the “Done!” message."],
+  tip_cat: ["Meta no pide el número de tu negocio hasta el paso 6: es normal. El número que escribas ahí debe ser el mismo que pediste a Lima Softwares.", "A Meta só pede o número do seu negócio no passo 6: é normal. O número que digitar ali deve ser o mesmo que você pediu à Lima Softwares.", "Meta only asks for your business number at step 6: that's normal. The number you type there must be the same one you requested from Lima Softwares."],
+  opt_t: ["¿Cómo usarás este número? Elige una", "Como vai usar este número? Escolha uma", "How will you use this number? Pick one"],
+  coex_d: ["Seguirás contestando desde la app WhatsApp Business de tu celular y el chatbot atenderá por el mismo número. Tus chats se mantienen. Meta te pedirá escanear un QR desde la app.", "Você continua respondendo pelo app WhatsApp Business do celular e o chatbot atende pelo mesmo número. Suas conversas continuam. A Meta vai pedir para escanear um QR no app.", "You keep answering from the WhatsApp Business app on your phone and the chatbot serves through the same number. Your chats stay. Meta will ask you to scan a QR from the app."],
+  botonly_d: ["El número queda solo para el chatbot: ya no podrás usarlo en la app WhatsApp Business del celular (si hoy está en la app, Meta lo desvincula de ella). Recibirás un código por SMS o llamada para verificarlo.", "O número fica só para o chatbot: você não poderá mais usá-lo no app WhatsApp Business do celular (se hoje está no app, a Meta o desvincula dele). Você receberá um código por SMS ou ligação para verificar.", "The number is for the chatbot only: you won't be able to use it in the WhatsApp Business app on your phone (if it's in the app today, Meta unlinks it). You'll get a code by SMS or call to verify it."],
+  time: ["Si algo falla, no pierdes nada: vuelve a tocar «Conectar con Facebook» y repite el paso donde quedaste.", "Se algo falhar, você não perde nada: toque de novo em «Conectar com o Facebook» e repita o passo em que parou.", "If something fails you lose nothing: tap “Continue with Facebook” again and repeat the step where you stopped."],
+  numlead: ["Número que pediste para el chatbot:", "Número que você pediu para o chatbot:", "Number you requested for the chatbot:"],
+  coex: ["El número {n} ya está registrado en la app WhatsApp Business de mi celular y quiero seguir usándola.", "O número {n} já está cadastrado no app WhatsApp Business do meu celular e quero continuar usando.", "The number {n} is already registered in the WhatsApp Business app on my phone and I want to keep using it."],
+  botonly: ["Quiero que {n} sea solo del chatbot (no lo uso en la app WhatsApp Business).", "Quero que {n} seja só do chatbot (não uso no app WhatsApp Business).", "I want {n} to be for the chatbot only (I don't use it in the WhatsApp Business app)."],
+  thisnum: ["este número", "este número", "this number"],
+  pick: ["Elige una de las dos opciones para continuar.", "Escolha uma das duas opções para continuar.", "Choose one of the two options to continue."],
+  incomplete: ["Meta no nos devolvió la cuenta de WhatsApp. Vuelve a intentarlo: en la ventana de Facebook elige o crea tu cuenta de WhatsApp Business y registra el número hasta el final. Si se repite, escríbenos por WhatsApp: +51 974 548 596.", "A Meta não devolveu a conta do WhatsApp. Tente de novo: na janela do Facebook escolha ou crie sua conta do WhatsApp Business e registre o número até o fim. Se repetir, fale conosco pelo WhatsApp: +51 974 548 596.", "Meta didn't return the WhatsApp account. Try again: in the Facebook window pick or create your WhatsApp Business account and register the number to the end. If it happens again, message us on WhatsApp: +51 974 548 596."],
   btn: ["Conectar con Facebook", "Conectar com o Facebook", "Continue with Facebook"],
   privacy: ["Lima Softwares solo recibe el permiso para enviar y recibir mensajes de tu cuenta de WhatsApp Business. Tu contraseña de Facebook nunca pasa por aquí. Política de privacidad: limasoftwares.com/privacidad.html", "A Lima Softwares só recebe a permissão para enviar e receber mensagens da sua conta do WhatsApp Business. Sua senha do Facebook nunca passa por aqui. Privacidade: limasoftwares.com/privacidad.html", "Lima Softwares only receives permission to send and receive messages for your WhatsApp Business account. Your Facebook password never goes through here. Privacy: limasoftwares.com/privacidad.html"],
   loading: ["Cargando…", "Carregando…", "Loading…"],
@@ -60,18 +94,33 @@ const T = {
   error: ["No se pudo terminar: ", "Não foi possível concluir: ", "Couldn't finish: "],
 };
 const q = new URLSearchParams(location.search);
+const NUM = ((q.get("n") || "").replace(/\D/g, "").slice(0, 15)).replace(/^(.+)$/, "+$1").replace(/^\+$/, "");
 const SID = (q.get("s") || "").replace(/[^0-9a-f]/g, "");
 let L = ["es", "pt", "en"].includes(q.get("l")) ? q.get("l") : ((navigator.language || "es").slice(0, 2) === "pt" ? "pt" : (navigator.language || "").startsWith("en") ? "en" : "es");
 const I = { es: 0, pt: 1, en: 2 };
 const tx = (k) => T[k][I[L]];
 function paint() {
   document.documentElement.lang = L;
-  document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = tx(e.dataset.t); });
+  document.querySelectorAll("[data-t]").forEach((e) => {
+    const v = tx(e.dataset.t);
+    if (e.tagName === "LI" && /^s\d$/.test(e.dataset.t)) e.innerHTML = v;  // pasos: texto propio de esta página, con el título en negrita
+    else e.textContent = v;
+  });
   document.querySelectorAll("[data-l]").forEach((b) => b.classList.toggle("on", b.dataset.l === L));
+  const n = NUM || tx("thisnum");
+  document.getElementById("coex_t").textContent = tx("coex").replace("{n}", n);
+  document.getElementById("botonly_t").textContent = tx("botonly").replace("{n}", n);
+  document.getElementById("numbox").hidden = !NUM;
+  document.getElementById("num").textContent = NUM;
 }
 document.querySelectorAll("[data-l]").forEach((b) => b.onclick = () => { L = b.dataset.l; paint(); });
 const msg = (k, cls, extra = "") => { const m = document.getElementById("msg"); m.hidden = false; m.className = "msg " + cls; m.textContent = tx(k) + extra; };
 const go = document.getElementById("go");
+const coexEl = document.getElementById("coex"), botEl = document.getElementById("botonly");
+let fbReady = false, busyNow = false;
+const sync = () => { go.disabled = !(fbReady && !busyNow && (coexEl.checked || botEl.checked)); };
+coexEl.onchange = () => { if (coexEl.checked) botEl.checked = false; sync(); };   // las dos opciones se excluyen
+botEl.onchange = () => { if (botEl.checked) coexEl.checked = false; sync(); };
 paint();
 
 let session = { waba_id: "", phone_number_id: "" }, finished = false;
@@ -91,13 +140,14 @@ async function finish(code) {
   for (let i = 0; i < 20 && !session.waba_id; i++) await new Promise((r) => setTimeout(r, 300));  // el aviso puede llegar un poco después
   try {
     const r = await fetch(API + "/v1/es/finish", { method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id: SID, code, waba_id: session.waba_id, phone_number_id: session.phone_number_id, coex: document.getElementById("coex").checked }) });
+      body: JSON.stringify({ id: SID, code, waba_id: session.waba_id, phone_number_id: session.phone_number_id, coex: coexEl.checked }) });
     const d = await r.json();
     if (d.ok) { finished = true; go.hidden = true; return msg("done", "ok"); }
     if (d.error === "es_expired") return msg("expired", "bad");
-    msg("error", "bad", d.msg || d.error || "");
+    if (d.error === "es_incomplete") msg("incomplete", "bad");
+    else msg("error", "bad", d.msg || d.error || "");
   } catch (e) { msg("error", "bad", String(e)); }
-  go.disabled = false;
+  busyNow = false; sync();
 }
 
 async function start() {
@@ -109,18 +159,19 @@ async function start() {
   window.fbAsyncInit = () => {
     FB.init({ appId: cfg.app_id, autoLogAppEvents: true, xfbml: false, version: "v23.0" });
     document.getElementById("msg").hidden = true;
-    go.disabled = false;
+    fbReady = true; sync();
   };
   const s = document.createElement("script");
   s.src = "https://connect.facebook.net/en_US/sdk.js"; s.async = true; s.defer = true; s.crossOrigin = "anonymous";
   document.head.append(s);
   go.onclick = () => {
-    go.disabled = true;
-    const coex = document.getElementById("coex").checked;
+    if (!coexEl.checked && !botEl.checked) { msg("pick", "wait"); return; }
+    busyNow = true; sync();
+    const coex = coexEl.checked;
     FB.login((resp) => {
       if (resp.authResponse && resp.authResponse.code) return finish(resp.authResponse.code);
       fetch(API + "/v1/es/cancel", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: SID, why: session.cancel || "closed" }) }).catch(() => {});
-      msg("cancel", "bad"); go.disabled = false;
+      msg("cancel", "bad"); busyNow = false; sync();
     }, {
       config_id: cfg.config_id, response_type: "code", override_default_response_type: true,
       extras: { setup: {}, featureType: coex ? "whatsapp_business_app_onboarding" : "", sessionInfoVersion: "3" },
