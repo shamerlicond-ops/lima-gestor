@@ -1,0 +1,9 @@
+# Nunca subir secretos ni bases de datos a la web pública
+*.pem
+*.key
+*.db
+*.sqlite
+.env
+*.log
+__pycache__/
+Thumbs.db
